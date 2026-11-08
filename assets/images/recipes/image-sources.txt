@@ -1,0 +1,163 @@
+================================================================================
+CHOPWISE / MEALMAP - RECIPE LIBRARY PHOTOGRAPHIC ASSET SOURCES
+================================================================================
+This file documents the provenance, source URLs, and licensing/attribution
+for all 21 recipes in the Recipe Library.
+
+--------------------------------------------------------------------------------
+FOUR PRESERVED APPROVED IMAGES (UNTOUCHED & PROTECTED)
+--------------------------------------------------------------------------------
+1. Rich Yoruba Efo Riro
+   - Recipe ID: rec_efo_riro
+   - Filename: assets/images/recipes/rec_efo_riro.jpg
+   - Source: https://commons.wikimedia.org/wiki/File:Efo_Riro.jpg
+   - Photographer / Artist: Bukky658
+   - License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+
+2. Savory Asaro (Yam Porridge)
+   - Recipe ID: rec_yam_porridge
+   - Filename: assets/images/recipes/rec_yam_porridge.jpg
+   - Source: https://commons.wikimedia.org/wiki/File:Asaro_Yam_porridge.jpg
+   - Photographer / Artist: Tunde Akangbe
+   - License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+
+3. Steamed Moi Moi
+   - Recipe ID: rec_moi_moi
+   - Filename: assets/images/recipes/rec_moi_moi.jpg
+   - Source: https://commons.wikimedia.org/wiki/File:Moi_moi.jpg
+   - Photographer / Artist: Rka11111
+   - License: Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+
+4. Authentic Street Suya (Beef Suya)
+   - Recipe ID: rec_beef_suya
+   - Filename: assets/images/recipes/rec_beef_suya.jpg
+   - Source: https://commons.wikimedia.org/wiki/File:Suya.jpg
+   - Photographer / Contributor: WhisperToMe
+   - License: Public Domain / CC0 Dedication
+
+--------------------------------------------------------------------------------
+UPDATED RESTAURANT-QUALITY FOOD PHOTOGRAPHS (17 RECIPES)
+--------------------------------------------------------------------------------
+5. Smoky Party Jollof Rice
+   - Recipe ID: rec_jollof_party
+   - Filename: assets/images/recipes/rec_jollof_party.jpg
+   - Source: https://commons.wikimedia.org/wiki/File:Party_Nigerian_jollof_rice.jpg
+   - Photographer / Artist: Halima Waziri
+   - License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+   - Visual: Authentic red-orange party jollof rice served with beef and boiled egg
+
+6. Authentic Egusi Soup with Bitterleaf & Assorted Meat
+   - Recipe ID: rec_egusi_soup
+   - Filename: assets/images/recipes/rec_egusi_soup.jpg
+   - Source: https://www.smokybowls.com.au/images/egusi-soup.jpg (https://www.smokybowls.com.au/)
+   - Source / Provider: Smoky Bowls Premium African Cuisine
+   - Visual: Authentic thick Nigerian egusi soup with visible tender meat and rich texture
+
+7. Silky Pounded Yam (Iyan)
+   - Recipe ID: rec_pounded_yam
+   - Filename: assets/images/recipes/rec_pounded_yam.jpg
+   - Source: https://commons.wikimedia.org/wiki/File:A_Plate_of_Pounded_Yam_(Iyan)_served_in_Birmingham_UK.JPG
+   - Photographer / Artist: Jovianeye
+   - License: Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+   - Visual: Smooth, beautifully moulded white mound of pounded yam on an elegant plate
+
+8. Golden Crispy Akara (Bean Cakes)
+   - Recipe ID: rec_akara_crispy
+   - Filename: assets/images/recipes/rec_akara_crispy.jpg
+   - Source: https://commons.wikimedia.org/wiki/File:Akara_Okpoto_01.jpg
+   - Photographer / Artist: Linason Blessing
+   - License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+   - Visual: Golden-brown, freshly fried Nigerian akara balls with crisp exterior on a clean plate
+
+9. Traditional Ewa Aganyin
+   - Recipe ID: rec_ewa_aganyin
+   - Filename: assets/images/recipes/rec_ewa_aganyin.jpg
+   - Source: https://beeolafoods.com/cdn/shop/files/IMG-4173.png?v=1771616938
+   - Source / Provider: Beeola Foods
+   - Visual: Soft mashed beans served with dark, coarse, spicy Aganyin pepper sauce
+
+10. Designer Ofada Rice with Spicy Ayamase
+    - Recipe ID: rec_ofada_ayamase
+    - Filename: assets/images/recipes/rec_ofada_ayamase.jpg
+    - Source: https://tkpe6wrwxmgsladx.public.blob.vercel-storage.com/recipes/nigerian-ofada-rice.jpg
+    - Visual: Premium restaurant presentation of Ofada rice with green Ayamase sauce and assorted meat
+
+11. Fresh Seafood Okra Soup (Ila Alasepo)
+    - Recipe ID: rec_okra_soup
+    - Filename: assets/images/recipes/rec_okra_soup.jpg
+    - Source: https://oceanova.ng/storage/meals/01KN22BD7BQF71KR6AG5VZK63Y.png
+    - Source / Provider: Oceanova Nigerian Seafood
+    - Visual: Nigerian draw-style seafood okra soup with recognizable prawns and seafood
+
+12. Traditional Ogbono Soup (Draw Soup)
+    - Recipe ID: rec_ogbono_soup
+    - Filename: assets/images/recipes/rec_ogbono_soup.jpg
+    - Source: https://emiroo.com/cdn/shop/files/ogbono_soup_w_goat.png?v=1754201007&width=1946
+    - Source / Provider: Emiroo African Kitchen
+    - Visual: Thick, drawy Nigerian ogbono soup with tender visible goat meat
+
+13. Delta Banga Soup (Oghwo Amiedi)
+    - Recipe ID: rec_banga_soup
+    - Filename: assets/images/recipes/rec_banga_soup.jpg
+    - Source: https://www.nkosiagro.com/cdn/shop/articles/hf_20260510_205936_f138f8dc-4e17-44aa-b567-92df520466ab.png?v=1778475008&width=1200
+    - Source / Provider: Nkosi Agro & Foods
+    - Visual: Rich reddish-orange palm fruit soup prepared with fish and traditional herbs
+
+14. Calabar Afang Soup
+    - Recipe ID: rec_afang_soup
+    - Filename: assets/images/recipes/rec_afang_soup.jpg
+    - Source: https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/afang_soup.jpg
+    - Source / Provider: SnapCalorie Culinary Collection
+    - Visual: Dark leafy wild okazi / afang vegetable texture with assorted meat
+
+15. Authentic Edikang Ikong Soup
+    - Recipe ID: rec_edikang_ikong
+    - Filename: assets/images/recipes/rec_edikang_ikong.jpg
+    - Source: https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/edikaikong_soup.jpg
+    - Source / Provider: SnapCalorie Culinary Collection
+    - Visual: Classic Efik fluted pumpkin and waterleaf green soup with visible meat
+
+16. Amala with Ewedu & Gbegiri (Abula)
+    - Recipe ID: rec_amala_abula
+    - Filename: assets/images/recipes/rec_amala_abula.jpg
+    - Source: https://files.chowdeck.com/images/2024/2024-09-20/Q22m0gE6QKJ5xHlStbHje.jpg
+    - Source / Provider: Chowdeck Culinary Menu
+    - Visual: Authentic Abula presentation: Amala swallow served with green ewedu and yellow gbegiri
+
+17. Fluffy Golden Puff Puff
+    - Recipe ID: rec_puff_puff
+    - Filename: assets/images/recipes/rec_puff_puff.jpg
+    - Source: https://emiroo.com/cdn/shop/files/bofrot.png?v=1755491782&width=1946
+    - Source / Provider: Emiroo African Kitchen
+    - Visual: Neat restaurant presentation of golden, round Nigerian puff puff
+
+18. Traditional Nigerian Meat Pie
+    - Recipe ID: rec_meat_pie
+    - Filename: assets/images/recipes/rec_meat_pie.jpg
+    - Source: https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/nigerian_meat_pie.jpg
+    - Source / Provider: SnapCalorie Culinary Collection
+    - Visual: Golden, flaky baked Nigerian meat pies with signature crimped edges
+
+19. Nigerian Party Fried Rice with Liver & Veggies
+    - Recipe ID: rec_nigerian_fried_rice
+    - Filename: assets/images/recipes/rec_nigerian_fried_rice.jpg
+    - Source: https://commons.wikimedia.org/wiki/File:Fried_rice_and_chicken_garnished_with_sweet_corn,_carrot_and_green_peas.jpg
+    - Photographer / Artist: Joyeche
+    - License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+    - Visual: Beautifully seasoned Nigerian party fried rice with visible sweet corn, diced carrots, green peas, and golden chicken
+
+20. Traditional Ogi (Akamu / Pap) with Milk & Sugar
+    - Recipe ID: rec_ogi_pap
+    - Filename: assets/images/recipes/rec_ogi_pap.jpg
+    - Source: https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/nigerian_pap.jpg
+    - Source / Provider: SnapCalorie Culinary Collection
+    - Visual: Smooth, creamy Nigerian corn pap in a bowl
+
+21. Fluffy Golden Pancakes with Honey & Fruit
+    - Recipe ID: rec_intl_pancakes
+    - Filename: assets/images/recipes/rec_intl_pancakes.jpg
+    - Source: https://commons.wikimedia.org/wiki/File:Fruit_Pancakes_(45112010972).jpg
+    - Photographer / Artist: Theo Crazzolara
+    - License: Creative Commons Attribution 2.0 Generic (CC BY 2.0)
+    - Visual: Fluffy golden pancakes stacked high with honey/syrup, fresh blueberries, strawberries, and raspberries
+================================================================================
