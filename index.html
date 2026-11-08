@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MealMap — Nigerian Food & Weekly Meal Planner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- App Shell Container -->
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation (Desktop & Tablet) -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a8 8 0 0 0-8 8c0 4.42 5 11 8 12 3-1 8-7.58 8-12a8 8 0 0 0-8-8z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1>MealMap</h1>
+            <span class="tagline">Nigerian Kitchen & Planner</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+            <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+            <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+            <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+          </svg>
+          <span>Dashboard</span>
+        </button>
+
+        <button class="nav-item" data-view="recipes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            <path d="M8 7h8M8 11h6"></path>
+          </svg>
+          <span>Recipes</span>
+          <span class="badge" id="nav-recipe-count">0</span>
+        </button>
+
+        <button class="nav-item" data-view="suggestions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span>What To Eat?</span>
+          <span class="badge badge-accent">AI Idea</span>
+        </button>
+
+        <button class="nav-item" data-view="planner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>Meal Planner</span>
+          <span class="badge" id="nav-planner-count">0</span>
+        </button>
+
+        <button class="nav-item" data-view="inventory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <span>Kitchen Inventory</span>
+          <span class="badge" id="nav-inventory-count">0</span>
+        </button>
+
+        <button class="nav-item" data-view="shopping">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span>Shopping List</span>
+          <span class="badge" id="nav-shopping-count">0</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="cuisine-highlight">
+          <span class="cuisine-pill">🇳🇬 100% Authentic Flavours</span>
+          <p>Celebrating Jollof, Egusi, Swallows & Rich Delicacies</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Bar (Mobile / Responsive) -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn mobile-menu-btn" id="mobileMenuToggle" aria-label="Toggle navigation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="view-heading-wrap">
+            <h2 class="view-title" id="currentViewTitle">Dashboard</h2>
+            <p class="view-subtitle" id="currentViewSubtitle">Overview of your delicious weekly plan</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <span class="topbar-date" id="topbarDate"></span>
+          <button class="btn btn-primary btn-sm" id="globalAddBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span class="btn-text">Add Recipe</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- View Containers -->
+      <main class="content-area" id="contentArea">
+
+        <!-- ============================================== -->
+        <!-- VIEW 1: DASHBOARD -->
+        <!-- ============================================== -->
+        <section class="view-section active" id="view-dashboard">
+          
+          <!-- Welcoming Banner -->
+          <div class="welcome-card">
+            <div class="welcome-content">
+              <div class="welcome-tag">🇳🇬 E Kaabo! Welcome to your Kitchen</div>
+              <h2 class="welcome-title" id="dashboardGreeting">Good day, Chef!</h2>
+              <p class="welcome-desc">Plan vibrant meals, discover heritage Nigerian dishes, track your kitchen ingredients, and generate smart shopping lists with zero hassle.</p>
+              <div class="welcome-actions">
+                <button class="btn btn-primary" onclick="App.navigate('suggestions')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                  What Should I Cook Today?
+                </button>
+                <button class="btn btn-secondary" onclick="App.navigate('planner')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  Open Meal Planner
+                </button>
+              </div>
+            </div>
+            <div class="welcome-illustration">
+              <div class="food-emoji-orb">🍲</div>
+            </div>
+          </div>
+
+          <!-- Stats Overview Grid -->
+          <div class="stats-grid">
+            <div class="stat-card" onclick="App.navigate('recipes')">
+              <div class="stat-icon stat-icon-green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+              </div>
+              <div class="stat-data">
+                <span class="stat-number" id="dashTotalRecipes">0</span>
+                <span class="stat-label">Saved Recipes</span>
+              </div>
+              <span class="stat-arrow">→</span>
+            </div>
+
+            <div class="stat-card" onclick="App.navigate('planner')">
+              <div class="stat-icon stat-icon-orange">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                </svg>
+              </div>
+              <div class="stat-data">
+                <span class="stat-number" id="dashPlannedMeals">0</span>
+                <span class="stat-label">Planned This Week</span>
+              </div>
+              <span class="stat-arrow">→</span>
+            </div>
+
+            <div class="stat-card" onclick="App.navigate('inventory')">
+              <div class="stat-icon stat-icon-sand">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+              </div>
+              <div class="stat-data">
+                <span class="stat-number" id="dashInventoryCount">0</span>
+                <span class="stat-label">Kitchen Items</span>
+              </div>
+              <span class="stat-arrow">→</span>
+            </div>
+
+            <div class="stat-card" onclick="App.navigate('shopping')">
+              <div class="stat-icon stat-icon-red">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+              </div>
+              <div class="stat-data">
+                <span class="stat-number" id="dashShoppingCount">0</span>
+                <span class="stat-label">Shopping Items</span>
+              </div>
+              <span class="stat-arrow">→</span>
+            </div>
+          </div>
+
+          <!-- Alert / Highlights Row -->
+          <div class="dashboard-alerts" id="dashAlertsContainer">
+            <!-- Dynamically injected warning/alert pills if ingredients expire or are low -->
+          </div>
+
+          <!-- Dashboard Two-Column Section -->
+          <div class="dashboard-columns">
+            
+            <!-- Left Column: Today's Planned Meals -->
+            <div class="dash-box">
+              <div class="dash-box-header">
+                <div>
+                  <h3 class="dash-box-title">Today's Meals</h3>
+                  <p class="dash-box-subtitle" id="dashTodayLabel">Meals scheduled for today</p>
+                </div>
+                <button class="btn btn-outline btn-xs" onclick="App.navigate('planner')">View Full Week</button>
+              </div>
+              <div class="dash-today-meals" id="dashTodayMealsList">
+                <!-- Dynamically populated today's slots -->
+              </div>
+            </div>
+
+            <!-- Right Column: Daily Nigerian Meal Spotlight -->
+            <div class="dash-box">
+              <div class="dash-box-header">
+                <div>
+                  <h3 class="dash-box-title">Daily Nigerian Spotlight 🇳🇬</h3>
+                  <p class="dash-box-subtitle">Hand-picked authentic meal inspiration</p>
+                </div>
+                <button class="btn btn-outline btn-xs" id="refreshSpotlightBtn" title="Get another dish suggestion">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:4px;">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                  </svg>
+                  Shuffle
+                </button>
+              </div>
+              <div class="spotlight-card" id="dashSpotlightCard">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Weekly Mini-Overview Strip -->
+          <div class="dash-box" style="margin-top: 1.5rem;">
+            <div class="dash-box-header">
+              <div>
+                <h3 class="dash-box-title">Week at a Glance</h3>
+                <p class="dash-box-subtitle">Monday through Sunday planned meal distribution</p>
+              </div>
+              <button class="btn btn-primary btn-xs" onclick="App.navigate('planner')">Plan Meals</button>
+            </div>
+            <div class="week-glance-grid" id="dashWeekGlance">
+              <!-- Dynamically populated 7 days mini cards -->
+            </div>
+          </div>
+
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- VIEW 2: MANAGE RECIPES -->
+        <!-- ============================================== -->
+        <section class="view-section" id="view-recipes">
+          
+          <!-- Recipes Controls Header -->
+          <div class="section-toolbar">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="recipeSearchInput" placeholder="Search by recipe name or ingredient (e.g. egusi, yam, rice)...">
+              <button class="clear-search-btn" id="clearRecipeSearch" aria-label="Clear search" style="display:none;">&times;</button>
+            </div>
+
+            <div class="toolbar-actions">
+              <button class="btn btn-primary" id="openAddRecipeModalBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add New Recipe
+              </button>
+            </div>
+          </div>
+
+          <!-- Category Filter Tabs -->
+          <div class="filter-bar">
+            <div class="filter-pills" id="recipeCategoryFilters">
+              <button class="filter-pill active" data-category="all">All Meals (<span id="count-all">0</span>)</button>
+              <button class="filter-pill" data-category="breakfast">Breakfast (<span id="count-breakfast">0</span>)</button>
+              <button class="filter-pill" data-category="lunch">Lunch (<span id="count-lunch">0</span>)</button>
+              <button class="filter-pill" data-category="dinner">Dinner (<span id="count-dinner">0</span>)</button>
+              <button class="filter-pill" data-category="snack">Snacks (<span id="count-snack">0</span>)</button>
+              <button class="filter-pill" data-category="nigerian">🇳🇬 Nigerian Dishes (<span id="count-nigerian">0</span>)</button>
+            </div>
+            <div class="recipe-count-badge">
+              Showing <strong id="displayedRecipeCount">0</strong> of <strong id="totalRecipeCountHeader">0</strong> recipes
+            </div>
+          </div>
+
+          <!-- Recipes Grid Container -->
+          <div class="recipes-grid" id="recipesGrid">
+            <!-- Dynamically populated recipe cards -->
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" id="recipesEmptyState" style="display: none;">
+            <div class="empty-icon">🍲</div>
+            <h3>No recipes found</h3>
+            <p>Try adjusting your search keywords or filter category, or add your own custom recipe.</p>
+            <button class="btn btn-primary" id="emptyAddRecipeBtn">Add Your First Recipe</button>
+          </div>
+
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- VIEW 3: "WHAT SHOULD I EAT TODAY?" (SUGGESTIONS) -->
+        <!-- ============================================== -->
+        <section class="view-section" id="view-suggestions">
+          
+          <div class="suggestion-hero">
+            <div class="hero-badge">🇳🇬 Nigerian Culinary Assistant</div>
+            <h2 class="hero-title">What Should I Eat Today?</h2>
+            <p class="hero-desc">Unsure what to cook? Let MealMap suggest authentic Nigerian feasts or quick meals tailored to your kitchen ingredients, cravings, and preparation time.</p>
+          </div>
+
+          <!-- Suggestion Filters Panel -->
+          <div class="suggestion-panel">
+            <div class="suggestion-filters-grid">
+              
+              <div class="form-group">
+                <label for="sugCategorySelect">Meal Category</label>
+                <select id="sugCategorySelect" class="form-control">
+                  <option value="any">Any Meal Category</option>
+                  <option value="breakfast">Breakfast</option>
+                  <option value="lunch">Lunch</option>
+                  <option value="dinner">Dinner</option>
+                  <option value="snack">Snack / Street Food</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="sugTimeSelect">Maximum Prep + Cook Time</label>
+                <select id="sugTimeSelect" class="form-control">
+                  <option value="any">Any Duration</option>
+                  <option value="30">Quick & Easy (&le; 30 mins)</option>
+                  <option value="45">Standard (&le; 45 mins)</option>
+                  <option value="60">Hearty Cook (&le; 60 mins)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="sugCuisineSelect">Cuisine Focus</label>
+                <select id="sugCuisineSelect" class="form-control">
+                  <option value="nigerian">🇳🇬 Nigerian Cuisine Only (Primary Focus)</option>
+                  <option value="all">Any Cuisine (Include International Alternatives)</option>
+                </select>
+              </div>
+
+              <div class="form-group checkbox-group">
+                <label class="custom-checkbox">
+                  <input type="checkbox" id="sugInventoryMatchCheck">
+                  <span class="checkmark"></span>
+                  <span class="checkbox-label">
+                    <strong>Cook with what I have</strong>
+                    <small>Match against items currently in Kitchen Inventory</small>
+                  </span>
+                </label>
+              </div>
+
+            </div>
+
+            <div class="suggestion-actions">
+              <button class="btn btn-primary btn-lg" id="getSuggestionBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                </svg>
+                Suggest Delicious Meal
+              </button>
+              <button class="btn btn-secondary btn-lg" id="randomSurpriseBtn">
+                🎲 Surprise Me!
+              </button>
+            </div>
+          </div>
+
+          <!-- Suggestion Result Area -->
+          <div class="suggestion-result-wrapper" id="suggestionResultWrapper">
+            <!-- Dynamically populated suggestion card or empty state -->
+          </div>
+
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- VIEW 4: WEEKLY MEAL PLANNER -->
+        <!-- ============================================== -->
+        <section class="view-section" id="view-planner">
+          
+          <!-- Planner Header Toolbar -->
+          <div class="section-toolbar">
+            <div class="planner-day-tabs" id="plannerDayTabs">
+              <button class="day-tab active" data-day="all">All Week</button>
+              <button class="day-tab" data-day="monday">Mon</button>
+              <button class="day-tab" data-day="tuesday">Tue</button>
+              <button class="day-tab" data-day="wednesday">Wed</button>
+              <button class="day-tab" data-day="thursday">Thu</button>
+              <button class="day-tab" data-day="friday">Fri</button>
+              <button class="day-tab" data-day="saturday">Sat</button>
+              <button class="day-tab" data-day="sunday">Sun</button>
+            </div>
+
+            <div class="toolbar-actions">
+              <button class="btn btn-outline" id="addAllPlanToShoppingBtn" title="Add all missing ingredients from this week's plan into shopping list">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                Export Plan to Shopping List
+              </button>
+              <button class="btn btn-outline btn-danger" id="clearPlannerBtn" title="Clear all planned meals for the week">
+                Clear Week
+              </button>
+            </div>
+          </div>
+
+          <!-- Planner Grid (Monday - Sunday) -->
+          <div class="planner-grid" id="plannerGrid">
+            <!-- Dynamically populated 7 day cards, each with breakfast, lunch, dinner, snack -->
+          </div>
+
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- VIEW 5: KITCHEN INVENTORY -->
+        <!-- ============================================== -->
+        <section class="view-section" id="view-inventory">
+          
+          <div class="section-toolbar">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="inventorySearchInput" placeholder="Search kitchen ingredients (e.g. Palm oil, Garri, Pepper)...">
+              <button class="clear-search-btn" id="clearInventorySearch" aria-label="Clear search" style="display:none;">&times;</button>
+            </div>
+
+            <div class="toolbar-actions">
+              <button class="btn btn-primary" id="openAddInventoryModalBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Ingredient
+              </button>
+            </div>
+          </div>
+
+          <!-- Inventory Status Filter Pills -->
+          <div class="filter-bar">
+            <div class="filter-pills" id="inventoryStatusFilters">
+              <button class="filter-pill active" data-status="all">All Items (<span id="inv-count-all">0</span>)</button>
+              <button class="filter-pill" data-status="low">Running Low (<span id="inv-count-low">0</span>)</button>
+              <button class="filter-pill" data-status="expiring">Expiring Soon / Expired (<span id="inv-count-expiring">0</span>)</button>
+              <button class="filter-pill" data-status="good">Adequate Stock (<span id="inv-count-good">0</span>)</button>
+            </div>
+            <div class="recipe-count-badge">
+              Total in Kitchen: <strong id="totalInventoryCountHeader">0</strong> ingredients
+            </div>
+          </div>
+
+          <!-- Inventory Table / Cards Container -->
+          <div class="inventory-container" id="inventoryContainer">
+            <!-- Dynamically populated inventory items -->
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" id="inventoryEmptyState" style="display: none;">
+            <div class="empty-icon">🥫</div>
+            <h3>Your kitchen inventory is empty</h3>
+            <p>Add ingredients like palm oil, rice, beans, or egusi to track expiration dates and auto-suggest matching meals!</p>
+            <button class="btn btn-primary" id="emptyAddInventoryBtn">Add First Ingredient</button>
+          </div>
+
+        </section>
+
+
+        <!-- ============================================== -->
+        <!-- VIEW 6: SHOPPING LIST -->
+        <!-- ============================================== -->
+        <section class="view-section" id="view-shopping">
+          
+          <div class="section-toolbar">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="shoppingSearchInput" placeholder="Search shopping list items...">
+              <button class="clear-search-btn" id="clearShoppingSearch" aria-label="Clear search" style="display:none;">&times;</button>
+            </div>
+
+            <div class="toolbar-actions">
+              <button class="btn btn-primary" id="openAddShoppingModalBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Item
+              </button>
+              <button class="btn btn-outline" id="transferPurchasedBtn" title="Transfer checked items into your Kitchen Inventory">
+                📦 Move Purchased to Kitchen
+              </button>
+              <button class="btn btn-outline btn-danger" id="clearPurchasedShoppingBtn" title="Remove checked items">
+                Clear Purchased
+              </button>
+            </div>
+          </div>
+
+          <!-- Shopping Filter Pills -->
+          <div class="filter-bar">
+            <div class="filter-pills" id="shoppingFilters">
+              <button class="filter-pill active" data-filter="all">All Items (<span id="shop-count-all">0</span>)</button>
+              <button class="filter-pill" data-filter="pending">Pending (<span id="shop-count-pending">0</span>)</button>
+              <button class="filter-pill" data-filter="purchased">Purchased (<span id="shop-count-purchased">0</span>)</button>
+            </div>
+            <div class="recipe-count-badge">
+              Total items: <strong id="totalShoppingCountHeader">0</strong>
+            </div>
+          </div>
+
+          <!-- Shopping Items List -->
+          <div class="shopping-list-container" id="shoppingListContainer">
+            <!-- Dynamically populated shopping items -->
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" id="shoppingEmptyState" style="display: none;">
+            <div class="empty-icon">🛒</div>
+            <h3>Your shopping list is empty!</h3>
+            <p>You can manually add items, or add missing ingredients with one click from any recipe or meal plan.</p>
+            <button class="btn btn-primary" id="emptyAddShoppingBtn">Add Shopping Item</button>
+          </div>
+
+        </section>
+
+      </main>
+
+      <!-- Bottom Navigation Bar (Mobile) -->
+      <nav class="mobile-nav" id="mobileNav">
+        <button class="mobile-nav-item active" data-view="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+            <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+            <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+            <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+          </svg>
+          <span>Home</span>
+        </button>
+        <button class="mobile-nav-item" data-view="recipes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <span>Recipes</span>
+        </button>
+        <button class="mobile-nav-item mobile-nav-highlight" data-view="suggestions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span>Eat?</span>
+        </button>
+        <button class="mobile-nav-item" data-view="planner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+          </svg>
+          <span>Plan</span>
+        </button>
+        <button class="mobile-nav-item" data-view="inventory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          </svg>
+          <span>Kitchen</span>
+        </button>
+        <button class="mobile-nav-item" data-view="shopping">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span>Cart</span>
+        </button>
+      </nav>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================== -->
+  <!-- MODAL: ADD / EDIT RECIPE -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop" id="recipeFormModal" role="dialog" aria-modal="true" aria-labelledby="recipeModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="recipeModalTitle">Add New Recipe</h3>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <form id="recipeForm" class="modal-body">
+        <input type="hidden" id="recipeFormId">
+
+        <div class="form-group">
+          <label for="recipeFormName">Recipe Name <span class="req">*</span></label>
+          <input type="text" id="recipeFormName" class="form-control" placeholder="e.g. Smoky Party Jollof Rice" required>
+          <span class="field-error" id="errRecipeName"></span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="recipeFormCategory">Meal Category <span class="req">*</span></label>
+            <select id="recipeFormCategory" class="form-control" required>
+              <option value="breakfast">Breakfast</option>
+              <option value="lunch" selected>Lunch</option>
+              <option value="dinner">Dinner</option>
+              <option value="snack">Snack</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="recipeFormCuisine">Cuisine Origin <span class="req">*</span></label>
+            <select id="recipeFormCuisine" class="form-control" required>
+              <option value="nigerian" selected>🇳🇬 Nigerian Cuisine</option>
+              <option value="international">🌍 International</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row form-row-3">
+          <div class="form-group">
+            <label for="recipeFormPrepTime">Prep Time (mins) <span class="req">*</span></label>
+            <input type="number" id="recipeFormPrepTime" class="form-control" min="1" max="600" placeholder="20" required>
+            <span class="field-error" id="errRecipePrep"></span>
+          </div>
+          <div class="form-group">
+            <label for="recipeFormCookTime">Cook Time (mins) <span class="req">*</span></label>
+            <input type="number" id="recipeFormCookTime" class="form-control" min="0" max="600" placeholder="40" required>
+            <span class="field-error" id="errRecipeCook"></span>
+          </div>
+          <div class="form-group">
+            <label for="recipeFormServings">Servings <span class="req">*</span></label>
+            <input type="number" id="recipeFormServings" class="form-control" min="1" max="100" placeholder="4" required>
+            <span class="field-error" id="errRecipeServings"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="recipeFormIngredients">
+            Ingredients <span class="req">*</span>
+            <small class="label-hint">(Separate items with commas or new lines)</small>
+          </label>
+          <textarea id="recipeFormIngredients" class="form-control" rows="4" placeholder="3 cups parboiled rice&#10;5 fresh tomatoes&#10;3 tatashe peppers&#10;2 tbsp curry powder" required></textarea>
+          <span class="field-error" id="errRecipeIngredients"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="recipeFormInstructions">
+            Cooking Instructions <span class="req">*</span>
+            <small class="label-hint">(Step by step instructions)</small>
+          </label>
+          <textarea id="recipeFormInstructions" class="form-control" rows="4" placeholder="1. Blend tomatoes, tatashe and peppers.&#10;2. Fry with tomato paste and onions.&#10;3. Add stock and rice, cover with foil and simmer on low heat." required></textarea>
+          <span class="field-error" id="errRecipeInstructions"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="recipeFormImageUrl">
+            Optional Image URL
+            <small class="label-hint">(Web image link. Leave blank for default food illustration)</small>
+          </label>
+          <input type="url" id="recipeFormImageUrl" class="form-control" placeholder="https://images.unsplash.com/...">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveRecipeSubmitBtn">Save Recipe</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ============================================== -->
+  <!-- MODAL: RECIPE DETAIL VIEW -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop" id="recipeDetailModal" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle">
+    <div class="modal-card modal-card-lg">
+      <div class="modal-header">
+        <div class="detail-modal-badges">
+          <span class="badge" id="detailModalCategoryBadge">Lunch</span>
+          <span class="badge badge-accent" id="detailModalCuisineBadge">🇳🇬 Nigerian</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <div class="modal-body detail-modal-body">
+        <div class="detail-header-row">
+          <div class="detail-image-wrap" id="detailImageWrap">
+            <img id="detailModalImg" src="" alt="Recipe image" loading="lazy">
+          </div>
+          <div class="detail-meta-wrap">
+            <h2 class="detail-title" id="detailModalTitle">Recipe Title</h2>
+            <div class="detail-stats-bar">
+              <div class="detail-stat">
+                <span class="stat-meta-label">Prep Time</span>
+                <strong id="detailModalPrep">20 mins</strong>
+              </div>
+              <div class="detail-stat">
+                <span class="stat-meta-label">Cook Time</span>
+                <strong id="detailModalCook">40 mins</strong>
+              </div>
+              <div class="detail-stat">
+                <span class="stat-meta-label">Total Time</span>
+                <strong id="detailModalTotalTime">60 mins</strong>
+              </div>
+              <div class="detail-stat">
+                <span class="stat-meta-label">Servings</span>
+                <strong id="detailModalServings">4 people</strong>
+              </div>
+            </div>
+            
+            <div class="detail-action-buttons">
+              <button class="btn btn-primary btn-sm" id="detailPlanMealBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                </svg>
+                Add to Meal Planner
+              </button>
+              <button class="btn btn-secondary btn-sm" id="detailAddShoppingBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                Add Missing to Shopping List
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-content-columns">
+          <div class="detail-ingredients-col">
+            <div class="col-head">
+              <h3>Ingredients</h3>
+              <span class="badge" id="detailIngredientsCount">0 items</span>
+            </div>
+            <ul class="detail-ingredients-list" id="detailIngredientsList">
+              <!-- Dynamically populated ingredients with stock indicator -->
+            </ul>
+          </div>
+
+          <div class="detail-instructions-col">
+            <div class="col-head">
+              <h3>Cooking Instructions</h3>
+            </div>
+            <div class="detail-instructions-text" id="detailInstructionsText">
+              <!-- Dynamically formatted steps -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer detail-modal-footer">
+        <div class="footer-left">
+          <button class="btn btn-outline btn-sm" id="detailEditBtn">Edit Recipe</button>
+          <button class="btn btn-outline btn-danger btn-sm" id="detailDeleteBtn">Delete</button>
+        </div>
+        <button class="btn btn-outline" data-close-modal>Close</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================== -->
+  <!-- MODAL: ADD / EDIT KITCHEN INVENTORY -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop" id="inventoryFormModal" role="dialog" aria-modal="true" aria-labelledby="inventoryModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="inventoryModalTitle">Add Kitchen Ingredient</h3>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <form id="inventoryForm" class="modal-body">
+        <input type="hidden" id="inventoryFormId">
+
+        <div class="form-group">
+          <label for="invFormName">Ingredient Name <span class="req">*</span></label>
+          <input type="text" id="invFormName" class="form-control" placeholder="e.g. Ground Egusi, Palm Oil, Yam" required>
+          <span class="field-error" id="errInvName"></span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="invFormQuantity">Quantity <span class="req">*</span></label>
+            <input type="number" id="invFormQuantity" class="form-control" step="any" min="0.1" placeholder="2" required>
+            <span class="field-error" id="errInvQuantity"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="invFormUnit">Unit of Measurement <span class="req">*</span></label>
+            <select id="invFormUnit" class="form-control" required>
+              <option value="kg">kg (Kilogram)</option>
+              <option value="g">g (Grams)</option>
+              <option value="derica">Derica (Nigerian measure)</option>
+              <option value="cups" selected>Cups</option>
+              <option value="tubers">Tubers</option>
+              <option value="pieces">Pieces / Units</option>
+              <option value="bunch">Bunch</option>
+              <option value="wraps">Wraps</option>
+              <option value="liters">Liters</option>
+              <option value="ml">ml</option>
+              <option value="tbsp">Tablespoon (tbsp)</option>
+              <option value="tsp">Teaspoon (tsp)</option>
+              <option value="cans">Cans</option>
+              <option value="pinch">Pinch / To taste</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="invFormExpiry">
+              Expiry Date <span class="req">*</span>
+            </label>
+            <input type="date" id="invFormExpiry" class="form-control" required>
+            <span class="field-error" id="errInvExpiry"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="invFormThreshold">Low-Stock Alert Level</label>
+            <input type="number" id="invFormThreshold" class="form-control" min="1" value="2" title="Alert me when quantity falls to or below this amount">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveInventorySubmitBtn">Save to Inventory</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ============================================== -->
+  <!-- MODAL: ADD / EDIT SHOPPING LIST ITEM -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop" id="shoppingFormModal" role="dialog" aria-modal="true" aria-labelledby="shoppingModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="shoppingModalTitle">Add Shopping Item</h3>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <form id="shoppingForm" class="modal-body">
+        <input type="hidden" id="shoppingFormId">
+
+        <div class="form-group">
+          <label for="shopFormName">Item Name <span class="req">*</span></label>
+          <input type="text" id="shopFormName" class="form-control" placeholder="e.g. Stockfish, Red Onions, Tatashe" required>
+          <span class="field-error" id="errShopName"></span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="shopFormQuantity">Quantity <span class="req">*</span></label>
+            <input type="number" id="shopFormQuantity" class="form-control" step="any" min="0.1" value="1" required>
+            <span class="field-error" id="errShopQuantity"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="shopFormUnit">Unit of Measurement <span class="req">*</span></label>
+            <select id="shopFormUnit" class="form-control" required>
+              <option value="pieces" selected>Pieces / Units</option>
+              <option value="kg">kg (Kilogram)</option>
+              <option value="g">g (Grams)</option>
+              <option value="cups">Cups</option>
+              <option value="derica">Derica</option>
+              <option value="tubers">Tubers</option>
+              <option value="bunch">Bunch</option>
+              <option value="wraps">Wraps</option>
+              <option value="liters">Liters</option>
+              <option value="cans">Cans</option>
+              <option value="packs">Packs</option>
+              <option value="tbsp">Tablespoon</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveShoppingSubmitBtn">Save Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ============================================== -->
+  <!-- MODAL: ASSIGN RECIPE TO PLANNER -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop" id="assignPlannerModal" role="dialog" aria-modal="true" aria-labelledby="assignPlannerTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="assignPlannerTitle">Assign Meal to Plan</h3>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <form id="assignPlannerForm" class="modal-body">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="planSelectDay">Day of Week <span class="req">*</span></label>
+            <select id="planSelectDay" class="form-control" required>
+              <option value="monday">Monday</option>
+              <option value="tuesday">Tuesday</option>
+              <option value="wednesday">Wednesday</option>
+              <option value="thursday">Thursday</option>
+              <option value="friday">Friday</option>
+              <option value="saturday">Saturday</option>
+              <option value="sunday">Sunday</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="planSelectSlot">Meal Slot <span class="req">*</span></label>
+            <select id="planSelectSlot" class="form-control" required>
+              <option value="breakfast">Breakfast</option>
+              <option value="lunch" selected>Lunch</option>
+              <option value="dinner">Dinner</option>
+              <option value="snack">Snack</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="planRecipeSelect">Choose From Saved Recipes</label>
+          <select id="planRecipeSelect" class="form-control">
+            <option value="">-- Choose a Recipe --</option>
+            <!-- Dynamically populated recipes -->
+          </select>
+        </div>
+
+        <div class="divider-text">OR ENTER CUSTOM MEAL</div>
+
+        <div class="form-group">
+          <label for="planCustomMealInput">Custom Meal Name</label>
+          <input type="text" id="planCustomMealInput" class="form-control" placeholder="e.g. Leftover Suya & Chilled Zobo">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary" id="savePlanAssignmentBtn">Save to Plan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ============================================== -->
+  <!-- MODAL: GENERIC CONFIRMATION DIALOG -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+    <div class="modal-card modal-card-sm">
+      <div class="modal-header">
+        <h3 class="modal-title" id="confirmModalTitle">Confirm Action</h3>
+        <button class="modal-close-btn" id="confirmModalCloseBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmModalMessage" class="confirm-message">Are you sure you want to proceed?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" id="confirmModalCancelBtn">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmModalOkBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Main JavaScript File -->
+  <script src="script.js"></script>
+</body>
+</html>
