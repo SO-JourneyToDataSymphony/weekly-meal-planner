@@ -110,6 +110,14 @@
         <div class="cuisine-heritage-box">
           <span class="heritage-pill">🇳🇬 Authentic Nigerian Heritage</span>
           <p>Yoruba &bull; Igbo &bull; Hausa &bull; Niger Delta Flavours</p>
+          <button class="credits-trigger-btn" onclick="App.openImageCreditsModal()" title="View photographic credits and open licences">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span>Photo Sources &amp; Licences</span>
+          </button>
         </div>
       </div>
     </aside>
@@ -761,6 +769,39 @@
           <button type="submit" class="btn btn-primary" id="saveProfileSubmitBtn">Save Preference</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL: IMAGE SOURCES & CREDITS -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop" id="imageCreditsModal" role="dialog" aria-modal="true" aria-labelledby="creditsModalTitle">
+    <div class="modal-card modal-card-md credits-modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="creditsModalTitle">Culinary Photography Sources &amp; Licences</h3>
+          <p class="modal-subtitle">Authentic food photography sourced from Wikimedia Commons contributors</p>
+        </div>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <div class="modal-body credits-modal-body">
+        <div class="credits-toolbar">
+          <div class="credits-tabs">
+            <button class="credits-tab-btn active" data-credits-tab="recipes" onclick="App.switchCreditsTab('recipes')">Recipe Dishes (21)</button>
+            <button class="credits-tab-btn" data-credits-tab="ingredients" onclick="App.switchCreditsTab('ingredients')">Ingredients (16)</button>
+          </div>
+          <div class="credits-search-box">
+            <input type="text" id="creditsFilterInput" placeholder="Filter by food or author..." aria-label="Filter image credits">
+          </div>
+        </div>
+
+        <div class="credits-list-container" id="creditsListContainer">
+          <!-- Populated dynamically by App.renderImageCreditsList -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-close-modal>Done</button>
+      </div>
     </div>
   </div>
 

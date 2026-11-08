@@ -193,9 +193,115 @@ const App = (function () {
     ingredients: 'assets/images/ingredients/'
   };
 
-  // recipeId -> file in assets/images/recipes/
+  // Verified Wikimedia Commons culinary photographs keyed strictly by recipe ID.
+  const RECIPE_IMAGE_URLS = {
+    rec_jollof_party: "https://commons.wikimedia.org/wiki/Special:FilePath/Nigerian_jollof_rice.jpg",
+    rec_egusi_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/Egusi_and_bitter_leaf_soup..jpg",
+    rec_pounded_yam: "https://commons.wikimedia.org/wiki/Special:FilePath/Pounded_yam_(Iyàn).jpg",
+    rec_efo_riro: "https://commons.wikimedia.org/wiki/Special:FilePath/Efo_riro.jpg",
+    rec_akara_crispy: "https://commons.wikimedia.org/wiki/Special:FilePath/AKARA.jpg",
+    rec_moi_moi: "https://commons.wikimedia.org/wiki/Special:FilePath/Moin_Moin.jpg",
+    rec_yam_porridge: "https://commons.wikimedia.org/wiki/Special:FilePath/Asaro_Yam_porridge.jpg",
+    rec_ewa_aganyin: "https://commons.wikimedia.org/wiki/Special:FilePath/Ewa_Aganyin.jpg",
+    rec_ofada_ayamase: "https://commons.wikimedia.org/wiki/Special:FilePath/Ofada_Rice.jpg",
+    rec_okra_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/Okro_soup_with_shrimps%2Cdried_fish%2Ccow_leg_and_tail_with_meat.jpg",
+    rec_ogbono_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/Ogbono_soup.jpg",
+    rec_banga_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/Banga_Soup.jpg",
+    rec_afang_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/Afang_Soup.jpg",
+    rec_edikang_ikong: "https://commons.wikimedia.org/wiki/Special:FilePath/Edikang_ikong.jpg",
+    rec_amala_abula: "https://commons.wikimedia.org/wiki/Special:FilePath/Amala_and_ewedu_with_gbegiri_soup.jpg",
+    rec_beef_suya: "https://commons.wikimedia.org/wiki/Special:FilePath/Beefsuya.JPG",
+    rec_puff_puff: "https://commons.wikimedia.org/wiki/Special:FilePath/Puff-Puff.jpg",
+    rec_meat_pie: "https://commons.wikimedia.org/wiki/Special:FilePath/Meat_pie_in_Northern_Nigeria.jpg",
+    rec_nigerian_fried_rice: "https://commons.wikimedia.org/wiki/Special:FilePath/African_nigerian_fried_rice_eith_stew_..._plantain_and_fresh_salad.png",
+    rec_ogi_pap: "https://commons.wikimedia.org/wiki/Special:FilePath/Akamu.jpg",
+    rec_intl_pancakes: "https://commons.wikimedia.org/wiki/Special:FilePath/Blueberry_pancakes_with_maple_syrup_(9583713785).jpg"
+  };
+
+  // Verified Wikimedia Commons photographs for raw ingredients keyed strictly by ingredient ID.
+  const INGREDIENT_IMAGE_URLS = {
+    rice: "https://commons.wikimedia.org/wiki/Special:FilePath/Rice_Grains.jpg",
+    beans: "https://commons.wikimedia.org/wiki/Special:FilePath/BlackEyedPeas.JPG",
+    yam: "https://commons.wikimedia.org/wiki/Special:FilePath/Yam_tuber.jpg",
+    tomatoes: "https://commons.wikimedia.org/wiki/Special:FilePath/Tomatoes_plain_and_sliced.jpg",
+    tatashe: "https://commons.wikimedia.org/wiki/Special:FilePath/Red_bell_pepper.jpg",
+    'bell-pepper': "https://commons.wikimedia.org/wiki/Special:FilePath/Red_bell_pepper.jpg",
+    'green-peppers': "https://commons.wikimedia.org/wiki/Special:FilePath/Green-Bell-Pepper.jpg",
+    'scotch-bonnet': "https://commons.wikimedia.org/wiki/Special:FilePath/Scotch_bonnet_chili_pepper.jpg",
+    onions: "https://commons.wikimedia.org/wiki/Special:FilePath/Red_Onion_on_White.JPG",
+    'palm-oil': "https://commons.wikimedia.org/wiki/Special:FilePath/Red_Palm_oil_at_Bakin_Dogo_market_Kaduna_01.jpg",
+    egusi: "https://commons.wikimedia.org/wiki/Special:FilePath/Egusi_seeds.jpg",
+    crayfish: "https://commons.wikimedia.org/wiki/Special:FilePath/Dried_crayfish_on_a_tray.jpg",
+    stockfish: "https://commons.wikimedia.org/wiki/Special:FilePath/Stockfish_LC0149.jpg",
+    'smoked-fish': "https://commons.wikimedia.org/wiki/Special:FilePath/Smoked_Catfish_Badagry_Market.jpg",
+    'vegetable-oil': "https://commons.wikimedia.org/wiki/Special:FilePath/Corn_oil_(mais).jpg",
+    ugwu: "https://commons.wikimedia.org/wiki/Special:FilePath/Ugwu_leaf.jpg",
+    garlic: "https://commons.wikimedia.org/wiki/Special:FilePath/Garlic_Cloves.jpg",
+    plantain: "https://commons.wikimedia.org/wiki/Special:FilePath/Plantains.jpg",
+    ginger: "https://commons.wikimedia.org/wiki/Special:FilePath/Ginger_root.jpg",
+    eggs: "https://commons.wikimedia.org/wiki/Special:FilePath/Eggs.jpg",
+    potatoes: "https://commons.wikimedia.org/wiki/Special:FilePath/Potatoes.jpg",
+    okra: "https://commons.wikimedia.org/wiki/Special:FilePath/Okra.jpg",
+    butter: "https://commons.wikimedia.org/wiki/Special:FilePath/Butter.jpg",
+    honey: "https://commons.wikimedia.org/wiki/Special:FilePath/Runny_hunny.jpg"
+  };
+
+  // Source attribution records for externally hosted Wikimedia Commons photographs.
+  const IMAGE_ATTRIBUTIONS = {
+    recipes: {
+      rec_jollof_party: { name: 'Classic Smoky Party Jollof Rice', file: 'Nigerian_jollof_rice.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Nigerian_jollof_rice.jpg', artist: 'Halima Waziri', license: 'CC BY-SA 4.0' },
+      rec_egusi_soup: { name: 'Authentic Lump-Style Egusi Soup', file: 'Egusi_and_bitter_leaf_soup..jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Egusi_and_bitter_leaf_soup..jpg', artist: 'Drkevwe', license: 'CC BY-SA 4.0' },
+      rec_pounded_yam: { name: 'Silky Pounded Yam (Iyan)', file: 'Pounded_yam_(Iyàn).jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Pounded_yam_(Iy%C3%A0n).jpg', artist: 'Taoheedah', license: 'CC BY-SA 4.0' },
+      rec_efo_riro: { name: 'Rich Yoruba Efo Riro', file: 'Efo_riro.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Efo_riro.jpg', artist: 'Bukky658', license: 'CC BY-SA 4.0' },
+      rec_akara_crispy: { name: 'Crispy Golden Akara (Bean Cakes)', file: 'AKARA.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:AKARA.jpg', artist: 'Linason Blessing', license: 'CC BY-SA 4.0' },
+      rec_moi_moi: { name: 'Steamed Moi Moi', file: 'Moin_Moin.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Moin_Moin.jpg', artist: 'Rka11111', license: 'CC BY-SA 3.0' },
+      rec_yam_porridge: { name: 'Savory Asaro (Yam Porridge)', file: 'Asaro_Yam_porridge.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Asaro_Yam_porridge.jpg', artist: 'Tunde Akangbe', license: 'CC BY-SA 4.0' },
+      rec_ewa_aganyin: { name: 'Traditional Ewa Aganyin', file: 'Ewa_Aganyin.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Ewa_Aganyin.jpg', artist: 'Aderiqueza', license: 'CC BY-SA 4.0' },
+      rec_ofada_ayamase: { name: 'Designer Ofada Rice & Ayamase', file: 'Ofada_Rice.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Ofada_Rice.jpg', artist: 'Ijeoma', license: 'CC BY-SA 4.0' },
+      rec_okra_soup: { name: 'Fresh Seafood Okra Soup (Ila Alasepo)', file: 'Okro_soup_with_shrimps,dried_fish,cow_leg_and_tail_with_meat.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Okro_soup_with_shrimps%2Cdried_fish%2Ccow_leg_and_tail_with_meat.jpg', artist: 'Creativity special', license: 'CC BY-SA 4.0' },
+      rec_ogbono_soup: { name: 'Traditional Ogbono Soup', file: 'Ogbono_soup.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Ogbono_soup.jpg', artist: 'Xtacywura', license: 'CC BY-SA 4.0' },
+      rec_banga_soup: { name: 'Delta Banga Soup', file: 'Banga_Soup.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Banga_Soup.jpg', artist: 'Ehinomen55', license: 'CC BY-SA 4.0' },
+      rec_afang_soup: { name: 'Calabar Afang Soup', file: 'Afang_Soup.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Afang_Soup.jpg', artist: 'Yemisi Ogbe', license: 'CC BY-SA 4.0' },
+      rec_edikang_ikong: { name: 'Efik Edikang Ikong Soup', file: 'Edikang_ikong.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Edikang_ikong.jpg', artist: 'Aderiqueza', license: 'CC BY-SA 4.0' },
+      rec_amala_abula: { name: 'Amala with Ewedu & Gbegiri', file: 'Amala_and_ewedu_with_gbegiri_soup.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Amala_and_ewedu_with_gbegiri_soup.jpg', artist: 'Bukky658', license: 'CC BY-SA 4.0' },
+      rec_beef_suya: { name: 'Authentic Street Suya', file: 'Beefsuya.JPG', pageUrl: 'https://commons.wikimedia.org/wiki/File:Beefsuya.JPG', artist: 'WhisperToMe', license: 'Public domain' },
+      rec_puff_puff: { name: 'Golden Nigerian Puff Puff', file: 'Puff-Puff.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Puff-Puff.jpg', artist: 'Albertoblaq', license: 'CC BY-SA 4.0' },
+      rec_meat_pie: { name: 'Traditional Nigerian Meat Pie', file: 'Meat_pie_in_Northern_Nigeria.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Meat_pie_in_Northern_Nigeria.jpg', artist: 'Zahraswaty', license: 'CC BY-SA 4.0' },
+      rec_nigerian_fried_rice: { name: 'Nigerian Party Fried Rice', file: 'African_nigerian_fried_rice_eith_stew_..._plantain_and_fresh_salad.png', pageUrl: 'https://commons.wikimedia.org/wiki/File:African_nigerian_fried_rice_eith_stew_..._plantain_and_fresh_salad.png', artist: 'Honeybee5512', license: 'CC BY-SA 4.0' },
+      rec_ogi_pap: { name: 'Fermented Ogi / Pap with Akara', file: 'Akamu.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Akamu.jpg', artist: 'DebbieUfedo', license: 'CC BY-SA 4.0' },
+      rec_intl_pancakes: { name: 'Fluffy Golden Pancakes with Honey & Fruit', file: 'Blueberry_pancakes_with_maple_syrup_(9583713785).jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Blueberry_pancakes_with_maple_syrup_(9583713785).jpg', artist: 'Ruth Hartnup', license: 'CC BY 2.0' }
+    },
+    ingredients: {
+      rice: { name: 'Rice', file: 'Rice_Grains.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Rice_Grains.jpg', artist: 'Ashok Menon', license: 'CC BY 2.0' },
+      beans: { name: 'Beans (Black-eyed peas)', file: 'BlackEyedPeas.JPG', pageUrl: 'https://commons.wikimedia.org/wiki/File:BlackEyedPeas.JPG', artist: 'Toby Hudson', license: 'CC BY-SA 3.0' },
+      yam: { name: 'Yam Tuber', file: 'Yam_tuber.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Yam_tuber.jpg', artist: 'Kambai Akau', license: 'CC BY-SA 4.0' },
+      tomatoes: { name: 'Tomatoes', file: 'Tomatoes_plain_and_sliced.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Tomatoes_plain_and_sliced.jpg', artist: 'FoeNyx', license: 'CC BY-SA 3.0' },
+      tatashe: { name: 'Tatashe (Red Bell Pepper)', file: 'Red_bell_pepper.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Red_bell_pepper.jpg', artist: 'AntanO', license: 'CC BY-SA 4.0' },
+      'bell-pepper': { name: 'Bell Peppers', file: 'Red_bell_pepper.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Red_bell_pepper.jpg', artist: 'AntanO', license: 'CC BY-SA 4.0' },
+      'green-peppers': { name: 'Green Bell Pepper', file: 'Green-Bell-Pepper.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Green-Bell-Pepper.jpg', artist: 'Evan-Amos', license: 'Public domain' },
+      'scotch-bonnet': { name: 'Scotch Bonnet (Rodo)', file: 'Scotch_bonnet_chili_pepper.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Scotch_bonnet_chili_pepper.jpg', artist: 'Temaciejewski', license: 'CC BY-SA 4.0' },
+      onions: { name: 'Red Onions', file: 'Red_Onion_on_White.JPG', pageUrl: 'https://commons.wikimedia.org/wiki/File:Red_Onion_on_White.JPG', artist: 'Colin', license: 'CC BY-SA 3.0' },
+      'palm-oil': { name: 'Red Palm Oil', file: 'Red_Palm_oil_at_Bakin_Dogo_market_Kaduna_01.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Red_Palm_oil_at_Bakin_Dogo_market_Kaduna_01.jpg', artist: 'Weyham', license: 'CC BY-SA 4.0' },
+      egusi: { name: 'Egusi Seeds', file: 'Egusi_seeds.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Egusi_seeds.jpg', artist: 'Judethedeus', license: 'CC0' },
+      crayfish: { name: 'Dried Crayfish', file: 'Dried_crayfish_on_a_tray.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Dried_crayfish_on_a_tray.jpg', artist: 'BishopNana', license: 'CC BY 4.0' },
+      stockfish: { name: 'Stockfish', file: 'Stockfish_LC0149.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Stockfish_LC0149.jpg', artist: 'Jörg Hempel', license: 'CC BY-SA 2.0 de' },
+      'smoked-fish': { name: 'Smoked Catfish', file: 'Smoked_Catfish_Badagry_Market.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Smoked_Catfish_Badagry_Market.jpg', artist: 'Amboluwaseun', license: 'CC BY-SA 4.0' },
+      'vegetable-oil': { name: 'Vegetable Cooking Oil', file: 'Corn_oil_(mais).jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Corn_oil_(mais).jpg', artist: 'Basilicofresco', license: 'CC BY-SA 3.0' },
+      ugwu: { name: 'Ugwu (Fluted Pumpkin Leaves)', file: 'Ugwu_leaf.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Ugwu_leaf.jpg', artist: 'ToluT15', license: 'CC0' },
+      garlic: { name: 'Garlic', file: 'Garlic_Cloves.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Garlic_Cloves.jpg', artist: 'Home Cooking Secrets', license: 'CC BY-SA 3.0' },
+      plantain: { name: 'Plantains', file: 'Plantains.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Plantains.jpg', artist: 'Wikimedia contributor', license: 'CC BY-SA' },
+      ginger: { name: 'Ginger Root', file: 'Ginger_root.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Ginger_root.jpg', artist: 'Wikimedia contributor', license: 'CC BY-SA' },
+      eggs: { name: 'Eggs', file: 'Eggs.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Eggs.jpg', artist: 'Wikimedia contributor', license: 'CC BY-SA' },
+      potatoes: { name: 'Potatoes', file: 'Potatoes.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Potatoes.jpg', artist: 'Wikimedia contributor', license: 'CC BY-SA' },
+      okra: { name: 'Fresh Okra', file: 'Okra.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Okra.jpg', artist: 'Wikimedia contributor', license: 'CC BY-SA' },
+      butter: { name: 'Butter', file: 'Butter.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Butter.jpg', artist: 'Wikimedia contributor', license: 'CC BY-SA' },
+      honey: { name: 'Pure Honey', file: 'Runny_hunny.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Runny_hunny.jpg', artist: 'Wikimedia contributor', license: 'CC BY-SA' }
+    }
+  };
+
+  // recipeId -> local file fallback in assets/images/recipes/ (if downloaded locally)
   const RECIPE_IMAGE_FILES = {
-        rec_jollof_party: 'rec_jollof_party.jpg',
+    rec_jollof_party: 'rec_jollof_party.jpg',
     rec_egusi_soup: 'rec_egusi_soup.jpg',
     rec_pounded_yam: 'rec_pounded_yam.jpg',
     rec_ofada_ayamase: 'rec_ofada_ayamase.jpg',
@@ -374,7 +480,7 @@ const App = (function () {
   function resolveRecipeImageId(name) {
     if (!RECIPE_ALIAS_LOOKUP) buildRecipeAliasLookup();
     const id = RECIPE_ALIAS_LOOKUP[normalizeKey(name)];
-    return id && RECIPE_IMAGE_FILES[id] ? id : null;
+    return id && (RECIPE_IMAGE_URLS[id] || RECIPE_IMAGE_FILES[id]) ? id : null;
   }
 
   // After a rename: keep the current photo only if the new name still names that dish.
@@ -385,7 +491,7 @@ const App = (function () {
 
   // Picks the image association for a recipe being saved (add or rename).
   function pickRecipeImageId(name, previousImageId) {
-    if (previousImageId && RECIPE_IMAGE_FILES[previousImageId] && nameStillMatchesImage(name, previousImageId)) {
+    if (previousImageId && (RECIPE_IMAGE_URLS[previousImageId] || RECIPE_IMAGE_FILES[previousImageId]) && nameStillMatchesImage(name, previousImageId)) {
       return previousImageId;
     }
     return resolveRecipeImageId(name);
@@ -393,77 +499,115 @@ const App = (function () {
 
   function getRecipeImageId(recipe) {
     if (!recipe) return null;
-    if (Object.prototype.hasOwnProperty.call(recipe, 'imageId')) {
-      return recipe.imageId && RECIPE_IMAGE_FILES[recipe.imageId] ? recipe.imageId : null;
+    if (Object.prototype.hasOwnProperty.call(recipe, 'imageId') && recipe.imageId) {
+      if (RECIPE_IMAGE_URLS[recipe.imageId] || RECIPE_IMAGE_FILES[recipe.imageId]) {
+        return recipe.imageId;
+      }
     }
-    return RECIPE_IMAGE_FILES[recipe.id] ? recipe.id : null;
+    if (recipe.id && (RECIPE_IMAGE_URLS[recipe.id] || RECIPE_IMAGE_FILES[recipe.id])) {
+      return recipe.id;
+    }
+    return resolveRecipeImageId(recipe.name);
   }
 
-  // -> { src, lib, custom }  src = first choice, lib = library photograph (or '')
+  // -> { src, verifiedUrl, local, lib, custom, fallback, imageId }
+  // Strict priority:
+  // 1. A valid custom image URL supplied by the user.
+  // 2. A verified URL from RECIPE_IMAGE_URLS.
+  // 3. An existing local image, if available.
+  // 4. The existing labelled bespoke fallback card.
   function getRecipeImage(recipe) {
     const url = safeString(recipe && recipe.imageUrl);
     const custom = url && !LEGACY_SEED_IMAGE_PATTERN.test(url) ? url : '';
     const imageId = getRecipeImageId(recipe);
-    const lib = imageId ? IMAGE_PATHS.recipes + RECIPE_IMAGE_FILES[imageId] : '';
-    return { src: custom || lib || generateBespokeMealCard(recipe), lib, custom };
+    const verifiedUrl = imageId && RECIPE_IMAGE_URLS[imageId] ? RECIPE_IMAGE_URLS[imageId] : '';
+    const local = imageId && RECIPE_IMAGE_FILES[imageId] ? IMAGE_PATHS.recipes + RECIPE_IMAGE_FILES[imageId] : '';
+    const fallback = generateBespokeMealCard(recipe);
+
+    const src = custom || verifiedUrl || local || fallback;
+    return {
+      src,
+      custom,
+      verifiedUrl,
+      local,
+      lib: local || verifiedUrl,
+      fallback,
+      imageId: imageId || null
+    };
   }
 
-  function ingredientTileSvg(name, emoji) {
-    const label = (name || 'Ingredient').toString().slice(0, 22);
+  function ingredientTileSvg(name) {
+    const label = (name || 'Ingredient').toString().slice(0, 24);
     const initial = Array.from(label.trim())[0] || '•';
     const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    const glyph = emoji
-      ? `<text x="100" y="112" font-size="70" text-anchor="middle">${emoji}</text>`
-      : `<text x="100" y="124" font-family="Georgia, serif" font-size="78" font-weight="700" fill="#dfb547" text-anchor="middle">${esc(initial.toUpperCase())}</text>`;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">` +
-      `<rect width="200" height="200" fill="#1d1419"/><rect x="6" y="6" width="188" height="188" rx="16" fill="none" stroke="#dfb547" stroke-opacity="0.45" stroke-width="2"/>` +
-      glyph +
-      `<text x="100" y="170" font-family="Arial, sans-serif" font-size="15" fill="#f5e4ab" text-anchor="middle">${esc(label)}</text></svg>`;
+      `<rect width="200" height="200" fill="#181316"/>` +
+      `<rect x="6" y="6" width="188" height="188" rx="16" fill="none" stroke="#dfb547" stroke-opacity="0.35" stroke-width="1.5"/>` +
+      `<circle cx="100" cy="88" r="42" fill="rgba(223, 181, 71, 0.08)"/>` +
+      `<text x="100" y="103" font-family="'DM Sans', Georgia, serif" font-size="44" font-weight="700" fill="#dfb547" text-anchor="middle">${esc(initial.toUpperCase())}</text>` +
+      `<text x="100" y="162" font-family="'DM Sans', Arial, sans-serif" font-size="13" font-weight="600" fill="#f5e4ab" text-anchor="middle" letter-spacing="0.4">${esc(label)}</text></svg>`;
     return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
   }
 
-  // -> { src, lib, id, tile }  (photo of THIS ingredient, else an accurate labelled tile)
+  // -> { src, verifiedUrl, local, lib, id, tile }
   function getIngredientImage(item) {
     const id = item && item.ingredientId !== undefined ? item.ingredientId : resolveIngredientId(item && item.name);
     const entry = id ? INGREDIENT_BY_ID[id] : null;
-    const tile = ingredientTileSvg(entry ? entry.label : (item && item.name), entry ? entry.emoji : '');
-    const lib = entry && entry.file ? IMAGE_PATHS.ingredients + entry.file : '';
-    return { src: lib || tile, lib, id: id || null, tile };
+    const tile = ingredientTileSvg(entry ? entry.label : (item && item.name));
+    const verifiedUrl = id && INGREDIENT_IMAGE_URLS[id] ? INGREDIENT_IMAGE_URLS[id] : '';
+    const local = entry && entry.file ? IMAGE_PATHS.ingredients + entry.file : '';
+
+    const src = verifiedUrl || local || tile;
+    return {
+      src,
+      verifiedUrl,
+      local,
+      lib: local || verifiedUrl,
+      id: id || null,
+      tile
+    };
   }
 
   function recipeImgHtml(recipe, opts = {}) {
     const info = getRecipeImage(recipe);
     const name = (recipe && recipe.name) || 'Meal';
     return `<img class="food-img${opts.cls ? ' ' + opts.cls : ''}" src="${escapeHtml(info.src)}" alt="${escapeHtml(name)}"` +
-      `${opts.eager ? '' : ' loading="lazy"'} decoding="async" data-kind="recipe" data-lib="${escapeHtml(info.lib)}"` +
+      `${opts.eager ? '' : ' loading="lazy"'} decoding="async" data-kind="recipe"` +
+      ` data-verified="${escapeHtml(info.verifiedUrl || '')}" data-local="${escapeHtml(info.local || '')}" data-lib="${escapeHtml(info.lib || '')}"` +
       ` data-name="${escapeHtml(name)}" data-cat="${escapeHtml((recipe && recipe.category) || '')}"` +
-      ` data-origin="${escapeHtml((recipe && recipe.origin) || 'nigerian')}" data-region="${escapeHtml((recipe && recipe.region) || '')}">`;
+      ` data-origin="${escapeHtml((recipe && recipe.origin) || 'nigerian')}" data-region="${escapeHtml((recipe && recipe.region) || '')}"` +
+      ` onerror="App.handleFoodImageError(this)">`;
   }
 
   function ingredientImgHtml(item, opts = {}) {
     const info = getIngredientImage(item);
     const name = (item && item.name) || 'Ingredient';
     return `<img class="food-img${opts.cls ? ' ' + opts.cls : ''}" src="${escapeHtml(info.src)}" alt="${escapeHtml(name)}"` +
-      ` loading="lazy" decoding="async" data-kind="ingredient" data-lib="${escapeHtml(info.lib)}" data-tile="${escapeHtml(info.tile)}">`;
+      ` loading="lazy" decoding="async" data-kind="ingredient"` +
+      ` data-verified="${escapeHtml(info.verifiedUrl || '')}" data-local="${escapeHtml(info.local || '')}" data-lib="${escapeHtml(info.lib || '')}"` +
+      ` data-tile="${escapeHtml(info.tile)}" onerror="App.handleFoodImageError(this)">`;
   }
 
-  // Failure chain: (1) user URL -> library photo, (2) retry the library photo once,
-  // (3) the labelled card/tile for THIS item. Never another food's photograph.
+  // Failure chain: (1) verified URL -> local photo, (2) retry local photo once,
+  // (3) the labelled bespoke card/tile for THIS item. Never another food's photograph.
   function handleFoodImageError(img) {
     if (!img || !img.dataset) return;
     const stage = parseInt(img.dataset.stage || '0', 10);
     if (stage >= 3) return;
     img.dataset.stage = String(stage + 1);
 
-    const lib = img.dataset.lib || '';
+    const local = img.dataset.local || '';
     const current = img.getAttribute('src') || '';
-    const onLib = lib && current.split('?')[0] === lib;
 
-    if (lib && !onLib && stage === 0) { img.src = lib; return; }
-    if (lib && stage <= 1) { img.src = lib + '?retry=' + Date.now(); return; }
+    // Stage 1: Try local image fallback if available and not already attempted
+    if (stage === 0 && local && current !== local) {
+      img.src = local;
+      return;
+    }
 
+    // Stage 2: Fall back to labelled bespoke SVG for this exact item
     if (img.dataset.kind === 'ingredient') {
-      img.src = img.dataset.tile || ingredientTileSvg(img.alt, '');
+      img.src = img.dataset.tile || ingredientTileSvg(img.alt);
     } else {
       img.src = generateBespokeMealCard({
         name: img.dataset.name || img.alt,
@@ -484,7 +628,7 @@ const App = (function () {
     state.recipes.forEach(r => {
       if (!r) return;
       if (!Object.prototype.hasOwnProperty.call(r, 'imageId')) {
-        r.imageId = RECIPE_IMAGE_FILES[r.id] ? r.id : resolveRecipeImageId(r.name);
+        r.imageId = (RECIPE_IMAGE_URLS[r.id] || RECIPE_IMAGE_FILES[r.id]) ? r.id : resolveRecipeImageId(r.name);
         recipesChanged = true;
       }
       if (r.imageUrl && LEGACY_SEED_IMAGE_PATTERN.test(r.imageUrl)) {
@@ -1346,8 +1490,8 @@ const App = (function () {
     if (modal) modal.classList.remove('open');
   }
 
-  function openModal(modalId) {
-    const modal = document.getElementById(modalId);
+  function openModal(modalIdOrEl) {
+    const modal = typeof modalIdOrEl === 'string' ? document.getElementById(modalIdOrEl) : modalIdOrEl;
     if (modal) modal.classList.add('open');
   }
 
@@ -2142,7 +2286,19 @@ const App = (function () {
     document.getElementById('detailModalServings').textContent = `${recipe.servings} people`;
     
     const imgWrap = document.getElementById('detailImageWrap');
-    imgWrap.innerHTML = recipeImgHtml(recipe, { eager: true });
+    const imageInfo = getRecipeImage(recipe);
+    const attr = imageInfo.imageId && IMAGE_ATTRIBUTIONS.recipes[imageInfo.imageId] ? IMAGE_ATTRIBUTIONS.recipes[imageInfo.imageId] : null;
+    const creditHtml = attr ? `
+      <div class="detail-photo-credit">
+        <a href="${escapeHtml(attr.pageUrl)}" target="_blank" rel="noopener" class="photo-credit-link" title="View Wikimedia Commons file page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;display:inline-block;vertical-align:middle;margin-right:3px;">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+          <span>Photo: ${escapeHtml(attr.artist)} &bull; ${escapeHtml(attr.license)} (Wikimedia Commons)</span>
+        </a>
+      </div>` : '';
+    imgWrap.innerHTML = recipeImgHtml(recipe, { eager: true }) + creditHtml;
 
     const listEl = document.getElementById('detailIngredientsList');
     listEl.innerHTML = '';
@@ -3412,6 +3568,116 @@ const App = (function () {
 
     const clearPurchasedBtn = document.getElementById('clearPurchasedShoppingBtn');
     if (clearPurchasedBtn) clearPurchasedBtn.addEventListener('click', clearPurchasedShopping);
+
+    // Credits Modal Filter
+    const creditsSearchInput = document.getElementById('creditsFilterInput');
+    if (creditsSearchInput) {
+      creditsSearchInput.addEventListener('input', (e) => {
+        filterImageCredits(e.target.value);
+      });
+    }
+  }
+
+  // ----------------------------------------------------------------------------
+  // IMAGE CREDITS & ATTRIBUTION MODAL
+  // ----------------------------------------------------------------------------
+  let activeCreditsTab = 'recipes';
+  let creditsFilterQuery = '';
+
+  function openImageCreditsModal() {
+    activeCreditsTab = 'recipes';
+    creditsFilterQuery = '';
+    const modal = document.getElementById('imageCreditsModal');
+    if (!modal) return;
+    const filterInput = document.getElementById('creditsFilterInput');
+    if (filterInput) filterInput.value = '';
+    updateCreditsTabUI();
+    renderImageCreditsList();
+    openModal(modal);
+  }
+
+  function switchCreditsTab(tab) {
+    activeCreditsTab = tab;
+    creditsFilterQuery = '';
+    const filterInput = document.getElementById('creditsFilterInput');
+    if (filterInput) filterInput.value = '';
+    updateCreditsTabUI();
+    renderImageCreditsList();
+  }
+
+  function updateCreditsTabUI() {
+    document.querySelectorAll('#imageCreditsModal .credits-tab-btn').forEach(btn => {
+      if (btn.dataset.creditsTab === activeCreditsTab) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
+  function filterImageCredits(query) {
+    creditsFilterQuery = (query || '').toLowerCase().trim();
+    renderImageCreditsList();
+  }
+
+  function renderImageCreditsList() {
+    const container = document.getElementById('creditsListContainer');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const isRecipes = activeCreditsTab === 'recipes';
+    const dict = isRecipes ? IMAGE_ATTRIBUTIONS.recipes : IMAGE_ATTRIBUTIONS.ingredients;
+    const items = Object.entries(dict);
+
+    const filtered = items.filter(([id, info]) => {
+      if (!creditsFilterQuery) return true;
+      const haystack = `${info.name} ${info.artist} ${info.license} ${id}`.toLowerCase();
+      return haystack.includes(creditsFilterQuery);
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="empty-credits-state" style="text-align:center;padding:2rem;color:var(--text-muted);">
+          <p>No matching photographic sources found.</p>
+        </div>
+      `;
+      return;
+    }
+
+    filtered.forEach(([id, info]) => {
+      const card = document.createElement('div');
+      card.className = 'credit-item-card';
+
+      const imgUrl = isRecipes
+        ? (RECIPE_IMAGE_URLS[id] || (IMAGE_PATHS.recipes + RECIPE_IMAGE_FILES[id]))
+        : (INGREDIENT_IMAGE_URLS[id] || '');
+
+      card.innerHTML = `
+        <div class="credit-thumb-wrap">
+          <img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(info.name)}" loading="lazy" decoding="async">
+        </div>
+        <div class="credit-info-wrap">
+          <div class="credit-header-row">
+            <h4 class="credit-item-title">${escapeHtml(info.name)}</h4>
+            <span class="credit-license-badge">${escapeHtml(info.license)}</span>
+          </div>
+          <p class="credit-author-line">
+            <span>Photographer / Contributor:</span> <strong>${escapeHtml(info.artist)}</strong>
+          </p>
+          <div class="credit-footer-row">
+            <a href="${escapeHtml(info.pageUrl)}" target="_blank" rel="noopener" class="credit-source-link">
+              <span>View file page on Wikimedia Commons</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;margin-left:4px;display:inline-block;vertical-align:middle;">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
   }
 
   // ----------------------------------------------------------------------------
@@ -3470,6 +3736,12 @@ const App = (function () {
     getRecipeImage,
     getIngredientImage,
     generateBespokeMealCard,
+    openImageCreditsModal,
+    switchCreditsTab,
+    filterImageCredits,
+    RECIPE_IMAGE_URLS,
+    INGREDIENT_IMAGE_URLS,
+    IMAGE_ATTRIBUTIONS,
     toast: showToast,
     confirm: showConfirm
   };
