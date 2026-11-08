@@ -5,35 +5,39 @@ This file documents the provenance, source URLs, and licensing/attribution
 for all 21 recipes in the Recipe Library.
 
 --------------------------------------------------------------------------------
-FOUR PRESERVED APPROVED IMAGES (UNTOUCHED & PROTECTED)
+FOUR APPROVED RESTAURANT PHOTOGRAPHS (EFO RIRO, YAM PORRIDGE, MOI MOI, SUYA)
 --------------------------------------------------------------------------------
 1. Rich Yoruba Efo Riro
    - Recipe ID: rec_efo_riro
    - Filename: assets/images/recipes/rec_efo_riro.jpg
-   - Source: https://commons.wikimedia.org/wiki/File:Efo_Riro.jpg
-   - Photographer / Artist: Bukky658
-   - License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+   - Direct Image: https://static.wixstatic.com/media/df7f9c_0508ceeb7d8c48d18aac5591a07e1122~mv2.jpg
+   - Source Page: https://www.honeypotafricanrestaurant.co.uk/product-page/nigerian-eforiro-soup-yoruba-eforiro-soup
+   - Provider: Honeypot African Restaurant (London, UK)
+   - Visual: Authentic Yoruba rich Efo Riro soup with assorted meats and rich red pepper sauce
 
 2. Savory Asaro (Yam Porridge)
    - Recipe ID: rec_yam_porridge
    - Filename: assets/images/recipes/rec_yam_porridge.jpg
-   - Source: https://commons.wikimedia.org/wiki/File:Asaro_Yam_porridge.jpg
-   - Photographer / Artist: Tunde Akangbe
-   - License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+   - Direct Image: https://cdn.foodaciously.com/static/recipe/dRoNPQJZFl8vCaB2BpTg/nigerian-yam-porrige-eeaf55a0d0f5aab31dcb4f9ced326a81-1280-q60.jpg
+   - Source Page: https://foodaciously.com/recipe/nigerian-yam-porridge
+   - Provider: Foodaciously Culinary Platform
+   - Visual: Authentic Nigerian yam porridge cooked in palm oil with spinach
 
 3. Steamed Moi Moi
    - Recipe ID: rec_moi_moi
    - Filename: assets/images/recipes/rec_moi_moi.jpg
-   - Source: https://commons.wikimedia.org/wiki/File:Moi_moi.jpg
-   - Photographer / Artist: Rka11111
-   - License: Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+   - Direct Image: https://daintyfoods.me/assets/moi-moi-Cx2xXsXx.jpg
+   - Source Page: https://daintyfoods.me/
+   - Provider: Dainty Foods
+   - Visual: Steamed savory Nigerian bean pudding (Moi Moi) plated presentation
 
-4. Authentic Street Suya (Beef Suya)
+4. Authentic Nigerian Beef Suya
    - Recipe ID: rec_beef_suya
    - Filename: assets/images/recipes/rec_beef_suya.jpg
-   - Source: https://commons.wikimedia.org/wiki/File:Suya.jpg
-   - Photographer / Contributor: WhisperToMe
-   - License: Public Domain / CC0 Dedication
+   - Direct Image: https://daintyfoods.me/assets/suya-BH_cXW5_.jpg
+   - Source Page: https://daintyfoods.me/
+   - Provider: Dainty Foods
+   - Visual: Authentic grilled Nigerian spiced beef suya skewers with sliced onions
 
 --------------------------------------------------------------------------------
 UPDATED RESTAURANT-QUALITY FOOD PHOTOGRAPHS (17 RECIPES)

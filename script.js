@@ -198,10 +198,10 @@ const App = (function () {
     rec_jollof_party: "https://commons.wikimedia.org/wiki/Special:FilePath/Party_Nigerian_jollof_rice.jpg",
     rec_egusi_soup: "https://www.smokybowls.com.au/images/egusi-soup.jpg",
     rec_pounded_yam: "https://commons.wikimedia.org/wiki/Special:FilePath/A_Plate_of_Pounded_Yam_(Iyan)_served_in_Birmingham_UK.JPG",
-    rec_efo_riro: "https://commons.wikimedia.org/wiki/Special:FilePath/Efo_Riro.jpg",
+    rec_efo_riro: "https://static.wixstatic.com/media/df7f9c_0508ceeb7d8c48d18aac5591a07e1122~mv2.jpg",
     rec_akara_crispy: "https://commons.wikimedia.org/wiki/Special:FilePath/Akara_Okpoto_01.jpg",
-    rec_moi_moi: "https://commons.wikimedia.org/wiki/Special:FilePath/Moi_moi.jpg",
-    rec_yam_porridge: "https://commons.wikimedia.org/wiki/Special:FilePath/Asaro_Yam_porridge.jpg",
+    rec_moi_moi: "https://daintyfoods.me/assets/moi-moi-Cx2xXsXx.jpg",
+    rec_yam_porridge: "https://cdn.foodaciously.com/static/recipe/dRoNPQJZFl8vCaB2BpTg/nigerian-yam-porrige-eeaf55a0d0f5aab31dcb4f9ced326a81-1280-q60.jpg",
     rec_ewa_aganyin: "https://beeolafoods.com/cdn/shop/files/IMG-4173.png?v=1771616938",
     rec_ofada_ayamase: "https://tkpe6wrwxmgsladx.public.blob.vercel-storage.com/recipes/nigerian-ofada-rice.jpg",
     rec_okra_soup: "https://oceanova.ng/storage/meals/01KN22BD7BQF71KR6AG5VZK63Y.png",
@@ -210,7 +210,7 @@ const App = (function () {
     rec_afang_soup: "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/afang_soup.jpg",
     rec_edikang_ikong: "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/edikaikong_soup.jpg",
     rec_amala_abula: "https://files.chowdeck.com/images/2024/2024-09-20/Q22m0gE6QKJ5xHlStbHje.jpg",
-    rec_beef_suya: "https://commons.wikimedia.org/wiki/Special:FilePath/Suya.jpg",
+    rec_beef_suya: "https://daintyfoods.me/assets/suya-BH_cXW5_.jpg",
     rec_puff_puff: "https://emiroo.com/cdn/shop/files/bofrot.png?v=1755491782&width=1946",
     rec_meat_pie: "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/nigerian_meat_pie.jpg",
     rec_nigerian_fried_rice: "https://commons.wikimedia.org/wiki/Special:FilePath/Fried_rice_and_chicken_garnished_with_sweet_corn%2C_carrot_and_green_peas.jpg",
@@ -252,10 +252,10 @@ const App = (function () {
       rec_jollof_party: { name: 'Smoky Party Jollof Rice', file: 'Party_Nigerian_jollof_rice.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Party_Nigerian_jollof_rice.jpg', artist: 'Halima Waziri', license: 'CC BY-SA 4.0' },
       rec_egusi_soup: { name: 'Authentic Lump-Style Egusi Soup', file: 'egusi-soup.jpg', pageUrl: 'https://www.smokybowls.com.au/', artist: 'Smoky Bowls Premium Cuisine', license: 'Restaurant Feature' },
       rec_pounded_yam: { name: 'Silky Pounded Yam (Iyan)', file: 'A_Plate_of_Pounded_Yam_(Iyan)_served_in_Birmingham_UK.JPG', pageUrl: 'https://commons.wikimedia.org/wiki/File:A_Plate_of_Pounded_Yam_(Iyan)_served_in_Birmingham_UK.JPG', artist: 'Jovianeye', license: 'CC BY-SA 3.0' },
-      rec_efo_riro: { name: 'Rich Yoruba Efo Riro', file: 'Efo_Riro.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Efo_Riro.jpg', artist: 'Bukky658', license: 'CC BY-SA 4.0' },
+      rec_efo_riro: { name: 'Rich Yoruba Efo Riro', file: 'df7f9c_0508ceeb7d8c48d18aac5591a07e1122~mv2.jpg', pageUrl: 'https://www.honeypotafricanrestaurant.co.uk/product-page/nigerian-eforiro-soup-yoruba-eforiro-soup', artist: 'Honeypot African Restaurant', license: 'Restaurant Feature' },
       rec_akara_crispy: { name: 'Crispy Golden Akara (Bean Cakes)', file: 'Akara_Okpoto_01.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Akara_Okpoto_01.jpg', artist: 'Linason Blessing', license: 'CC BY-SA 4.0' },
-      rec_moi_moi: { name: 'Steamed Moi Moi', file: 'Moi_moi.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Moi_moi.jpg', artist: 'Rka11111', license: 'CC BY-SA 3.0' },
-      rec_yam_porridge: { name: 'Savory Asaro (Yam Porridge)', file: 'Asaro_Yam_porridge.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Asaro_Yam_porridge.jpg', artist: 'Tunde Akangbe', license: 'CC BY-SA 4.0' },
+      rec_moi_moi: { name: 'Steamed Moi Moi', file: 'moi-moi-Cx2xXsXx.jpg', pageUrl: 'https://daintyfoods.me/', artist: 'Dainty Foods', license: 'Culinary Feature' },
+      rec_yam_porridge: { name: 'Savory Asaro (Yam Porridge)', file: 'nigerian-yam-porrige-eeaf55a0d0f5aab31dcb4f9ced326a81-1280-q60.jpg', pageUrl: 'https://foodaciously.com/recipe/nigerian-yam-porridge', artist: 'Foodaciously', license: 'Culinary Feature' },
       rec_ewa_aganyin: { name: 'Traditional Ewa Aganyin', file: 'IMG-4173.png', pageUrl: 'https://beeolafoods.com/', artist: 'Beeola Foods', license: 'Culinary Feature' },
       rec_ofada_ayamase: { name: 'Designer Ofada Rice & Ayamase Stew', file: 'nigerian-ofada-rice.jpg', pageUrl: 'https://tkpe6wrwxmgsladx.public.blob.vercel-storage.com/recipes/nigerian-ofada-rice.jpg', artist: 'Nigerian Cuisine Collection', license: 'Culinary Feature' },
       rec_okra_soup: { name: 'Fresh Seafood Okra Soup (Ila Alasepo)', file: '01KN22BD7BQF71KR6AG5VZK63Y.png', pageUrl: 'https://oceanova.ng/', artist: 'Oceanova Nigerian Seafood', license: 'Culinary Feature' },
@@ -264,7 +264,7 @@ const App = (function () {
       rec_afang_soup: { name: 'Calabar Afang Soup', file: 'afang_soup.jpg', pageUrl: 'https://www.snapcalorie.com/', artist: 'SnapCalorie Culinary Collection', license: 'Culinary Feature' },
       rec_edikang_ikong: { name: 'Efik Edikang Ikong Soup', file: 'edikaikong_soup.jpg', pageUrl: 'https://www.snapcalorie.com/', artist: 'SnapCalorie Culinary Collection', license: 'Culinary Feature' },
       rec_amala_abula: { name: 'Amala with Ewedu & Gbegiri', file: 'Q22m0gE6QKJ5xHlStbHje.jpg', pageUrl: 'https://chowdeck.com/', artist: 'Chowdeck Culinary Menu', license: 'Culinary Feature' },
-      rec_beef_suya: { name: 'Authentic Street Suya', file: 'Suya.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Suya.jpg', artist: 'WhisperToMe', license: 'Public domain' },
+      rec_beef_suya: { name: 'Authentic Nigerian Beef Suya', file: 'suya-BH_cXW5_.jpg', pageUrl: 'https://daintyfoods.me/', artist: 'Dainty Foods', license: 'Culinary Feature' },
       rec_puff_puff: { name: 'Golden Nigerian Puff Puff', file: 'bofrot.png', pageUrl: 'https://emiroo.com/', artist: 'Emiroo African Kitchen', license: 'Culinary Feature' },
       rec_meat_pie: { name: 'Traditional Nigerian Meat Pie', file: 'nigerian_meat_pie.jpg', pageUrl: 'https://www.snapcalorie.com/', artist: 'SnapCalorie Culinary Collection', license: 'Culinary Feature' },
       rec_nigerian_fried_rice: { name: 'Nigerian Party Fried Rice', file: 'Fried_rice_and_chicken_garnished_with_sweet_corn,_carrot_and_green_peas.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Fried_rice_and_chicken_garnished_with_sweet_corn,_carrot_and_green_peas.jpg', artist: 'Joyeche', license: 'CC BY-SA 4.0' },
@@ -529,8 +529,10 @@ const App = (function () {
   // 3. A verified external URL from RECIPE_IMAGE_URLS.
   // 4. The existing labelled bespoke fallback card.
   function getRecipeImage(recipe) {
+    const isStarter = recipe && recipe.id && STARTER_RECIPES.some(sr => sr.id === recipe.id);
     const url = safeString(recipe && recipe.imageUrl);
-    const custom = url && !LEGACY_SEED_IMAGE_PATTERN.test(url) ? url : '';
+    // Starter recipes rely on curated local assets; custom recipes preserve user-entered custom URLs
+    const custom = url && !LEGACY_SEED_IMAGE_PATTERN.test(url) && (!isStarter || !RECIPE_IMAGE_FILES[recipe.id]) ? url : '';
     const imageId = getRecipeImageId(recipe);
     const local = imageId && RECIPE_IMAGE_FILES[imageId] ? IMAGE_PATHS.recipes + RECIPE_IMAGE_FILES[imageId] : '';
     const verifiedUrl = imageId && RECIPE_IMAGE_URLS[imageId] ? RECIPE_IMAGE_URLS[imageId] : '';
@@ -644,15 +646,27 @@ const App = (function () {
   // Never touches names, quantities, user-typed image URLs or any other user data.
   function migrateImageAssociations() {
     let recipesChanged = false;
+    const starterIds = new Set(STARTER_RECIPES.map(sr => sr.id));
     state.recipes.forEach(r => {
       if (!r) return;
-      if (!Object.prototype.hasOwnProperty.call(r, 'imageId')) {
-        r.imageId = (RECIPE_IMAGE_URLS[r.id] || RECIPE_IMAGE_FILES[r.id]) ? r.id : resolveRecipeImageId(r.name);
-        recipesChanged = true;
-      }
-      if (r.imageUrl && LEGACY_SEED_IMAGE_PATTERN.test(r.imageUrl)) {
-        r.imageUrl = '';
-        recipesChanged = true;
+      if (starterIds.has(r.id)) {
+        if (r.imageId !== r.id) {
+          r.imageId = r.id;
+          recipesChanged = true;
+        }
+        if (r.imageUrl) {
+          r.imageUrl = '';
+          recipesChanged = true;
+        }
+      } else {
+        if (!Object.prototype.hasOwnProperty.call(r, 'imageId')) {
+          r.imageId = (RECIPE_IMAGE_URLS[r.id] || RECIPE_IMAGE_FILES[r.id]) ? r.id : resolveRecipeImageId(r.name);
+          recipesChanged = true;
+        }
+        if (r.imageUrl && LEGACY_SEED_IMAGE_PATTERN.test(r.imageUrl)) {
+          r.imageUrl = '';
+          recipesChanged = true;
+        }
       }
     });
     if (recipesChanged) saveRecipes();
