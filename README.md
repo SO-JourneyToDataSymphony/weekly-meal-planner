@@ -1,6 +1,10 @@
 # 🍲 MealMap — Nigerian Food & Weekly Meal Planner
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-15803d?style=for-the-badge&logo=github)](https://so-journeytodatasymphony.github.io/weekly-meal-planner/)
+
 A lightweight, modern web application for planning meals, managing recipes with an authentic Nigerian culinary focus, tracking kitchen inventory, and generating smart grocery shopping lists.
+
+👉 **Live App:** [https://so-journeytodatasymphony.github.io/weekly-meal-planner/](https://so-journeytodatasymphony.github.io/weekly-meal-planner/)
 
 Built with **pure HTML, CSS, and vanilla JavaScript** — zero frameworks, zero external dependencies, no server, and no database required. All user data is persisted directly in the browser via `localStorage`.
 
