@@ -108,3 +108,4 @@ weekly-meal-planner/
 
 ## 📄 License
 MIT License. Created with ❤️ for food lovers and Nigerian cuisine enthusiasts.
+
