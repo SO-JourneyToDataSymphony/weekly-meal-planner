@@ -1062,7 +1062,10 @@ const App = (function () {
 
     // Close mobile drawer if open
     const sidebar = document.getElementById('sidebar');
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
     if (sidebar) sidebar.classList.remove('open');
+    if (sidebarBackdrop) sidebarBackdrop.classList.remove('open');
+    document.body.style.overflow = '';
 
     // Update Topbar Title & Subtitle
     const viewTitle = document.getElementById('currentViewTitle');
@@ -2750,13 +2753,34 @@ const App = (function () {
       });
     });
 
-    // 3. Mobile Hamburger
+    // 3. Mobile Hamburger & Drawer Controls
     const mobileMenuBtn = document.getElementById('mobileMenuToggle');
     const sidebar = document.getElementById('sidebar');
-    if (mobileMenuBtn && sidebar) {
-      mobileMenuBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
-      });
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+    const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+
+    function toggleSidebar(open) {
+      if (!sidebar) return;
+      const shouldOpen = open !== undefined ? open : !sidebar.classList.contains('open');
+      if (shouldOpen) {
+        sidebar.classList.add('open');
+        if (sidebarBackdrop) sidebarBackdrop.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      } else {
+        sidebar.classList.remove('open');
+        if (sidebarBackdrop) sidebarBackdrop.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    }
+
+    if (mobileMenuBtn) {
+      mobileMenuBtn.addEventListener('click', () => toggleSidebar());
+    }
+    if (sidebarBackdrop) {
+      sidebarBackdrop.addEventListener('click', () => toggleSidebar(false));
+    }
+    if (sidebarCloseBtn) {
+      sidebarCloseBtn.addEventListener('click', () => toggleSidebar(false));
     }
 
     // Modal close triggers
@@ -2983,3 +3007,9 @@ const App = (function () {
   };
 
 })();
+
+// Guarantee global availability for inline HTML onclick handlers and extensions
+if (typeof window !== 'undefined') {
+  window.App = App;
+}
+
