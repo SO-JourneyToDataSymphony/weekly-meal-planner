@@ -17,8 +17,12 @@ const App = (function () {
     INVENTORY: 'mealmap_inventory_data',
     PLANNER: 'mealmap_planner_data',
     SHOPPING: 'mealmap_shopping_data',
-    USER_NAME: 'mealmap_user_name',
-    GREETING_PREF: 'mealmap_greeting_pref',
+    // Dedicated per-browser profile record: { name, greetingPref, createdAt, updatedAt }
+    PROFILE: 'mealmap_user_profile_v1',
+    // Legacy keys (pre-profile-screen versions). Only READ once to migrate a name the
+    // visitor themself saved in this browser; never written again.
+    LEGACY_USER_NAME: 'mealmap_user_name',
+    LEGACY_GREETING_PREF: 'mealmap_greeting_pref',
     INITIALIZED: 'mealmap_is_initialized'
   };
 
@@ -29,6 +33,11 @@ const App = (function () {
   // 2. NIGERIAN MULTI-LINGUAL GREETINGS POOL
   // ----------------------------------------------------------------------------
   const NIGERIAN_GREETINGS = [
+    // English, time-aware (first in the pool so a new profile reads "Good afternoon, <name>.")
+    { lang: 'English', text: 'Good morning', punct: '.', timeOfDay: 'morning', subtitle: 'What are we cooking today?' },
+    { lang: 'English', text: 'Good afternoon', punct: '.', timeOfDay: 'afternoon', subtitle: 'Time for a hearty lunch.' },
+    { lang: 'English', text: 'Good evening', punct: '.', timeOfDay: 'evening', subtitle: 'Ready for a comforting dinner?' },
+
     // Yoruba
     { lang: 'Yoruba', text: 'Ẹ káàbọ̀', timeOfDay: 'any', subtitle: 'Welcome to your kitchen!' },
     { lang: 'Yoruba', text: 'Ẹ kú àárọ̀', timeOfDay: 'morning', subtitle: 'Good morning! What are we cooking today?' },
@@ -169,6 +178,336 @@ const App = (function () {
   }
 
   // ----------------------------------------------------------------------------
+  // 3b. IMAGE LIBRARY — the single source of truth for image <-> item associations
+  //
+  // * Recipe photographs live in assets/images/recipes/ and are keyed by RECIPE ID.
+  // * Ingredient photographs live in assets/images/ingredients/ and are keyed by
+  //   INGREDIENT ID (see INGREDIENT_CATALOG). Records store that id (`ingredientId`)
+  //   when they are created/renamed, so an image never depends on array position.
+  // * Only assets that physically exist in the project are listed here. An item with
+  //   no photograph yet falls back to an accurate, clearly-labelled card for THAT item
+  //   (never to a photograph of a different food).
+  // ----------------------------------------------------------------------------
+  const IMAGE_PATHS = {
+    recipes: 'assets/images/recipes/',
+    ingredients: 'assets/images/ingredients/'
+  };
+
+  // recipeId -> file in assets/images/recipes/
+  const RECIPE_IMAGE_FILES = {
+        rec_jollof_party: 'rec_jollof_party.jpg',
+    rec_egusi_soup: 'rec_egusi_soup.jpg',
+    rec_pounded_yam: 'rec_pounded_yam.jpg',
+    rec_ofada_ayamase: 'rec_ofada_ayamase.jpg',
+    rec_okra_soup: 'rec_okra_soup.jpg',
+    rec_ogbono_soup: 'rec_ogbono_soup.jpg',
+    rec_beef_suya: 'rec_beef_suya.jpg',
+    rec_puff_puff: 'rec_puff_puff.jpg',
+    rec_meat_pie: 'rec_meat_pie.jpg'
+  };
+
+  // Names a recipe photograph may be matched by when a recipe has no id-based
+  // association (custom recipes / planner free-text meals). Exact normalised
+  // name match only (see resolveRecipeImageId) — no fuzzy guessing.
+  const RECIPE_IMAGE_ALIASES = {
+    rec_jollof_party: ['jollof rice', 'party jollof rice', 'jollof'],
+    rec_egusi_soup: ['egusi soup', 'egusi'],
+    rec_pounded_yam: ['pounded yam', 'iyan'],
+    rec_efo_riro: ['efo riro'],
+    rec_akara_crispy: ['akara', 'bean cakes'],
+    rec_moi_moi: ['moi moi', 'moin moin'],
+    rec_yam_porridge: ['yam porridge', 'asaro'],
+    rec_ewa_aganyin: ['ewa aganyin', 'ewa agoyin'],
+    rec_ofada_ayamase: ['ofada rice', 'ofada rice and ayamase', 'ayamase'],
+    rec_okra_soup: ['okra soup', 'okro soup'],
+    rec_ogbono_soup: ['ogbono soup', 'draw soup'],
+    rec_banga_soup: ['banga soup', 'palm nut soup'],
+    rec_afang_soup: ['afang soup'],
+    rec_edikang_ikong: ['edikang ikong', 'edikang ikong soup'],
+    rec_amala_abula: ['amala', 'abula', 'amala and ewedu', 'amala and gbegiri'],
+    rec_beef_suya: ['suya', 'beef suya'],
+    rec_puff_puff: ['puff puff'],
+    rec_meat_pie: ['meat pie'],
+    rec_nigerian_fried_rice: ['fried rice', 'nigerian fried rice'],
+    rec_ogi_pap: ['ogi', 'pap', 'akamu'],
+    rec_intl_pancakes: ['pancakes', 'pancake']
+  };
+
+  // Photographs previously seeded from remote stock URLs. They were not guaranteed to
+  // depict the named dish, so saved copies of those URLs are ignored in favour of the
+  // library photograph (user-typed image URLs are always respected).
+  const LEGACY_SEED_IMAGE_PATTERN = /images\.unsplash\.com\/photo-(1662116765994|1544025162|1528207776546)/;
+
+  // Ingredient catalogue: id, display label, the names it is recognised by, the
+  // photograph file (null = no photograph yet) and an accurate emoji used only on the
+  // fallback tile. Matching is whole-word / whole-phrase (see resolveIngredientId).
+  const INGREDIENT_CATALOG = [
+    { id: 'rice', label: 'Rice', file: 'rice.jpg', emoji: '', aliases: ['rice', 'long grain rice', 'parboiled rice', 'ofada rice', 'basmati rice'] },
+    { id: 'tomatoes', label: 'Tomatoes', file: null, emoji: '🍅', aliases: ['tomato', 'plum tomato', 'fresh tomato'] },
+    { id: 'tomato-paste', label: 'Tomato paste', file: null, emoji: '', aliases: ['tomato paste', 'tomato puree'] },
+    { id: 'onions', label: 'Onions', file: null, emoji: '🧅', aliases: ['onion', 'red onion', 'white onion'] },
+    { id: 'scotch-bonnet', label: 'Scotch bonnet', file: null, emoji: '🌶️', aliases: ['scotch bonnet', 'rodo', 'atarodo', 'habanero'] },
+    { id: 'bell-pepper', label: 'Bell peppers', file: null, emoji: '🫑', aliases: ['bell pepper', 'tatashe', 'capsicum'] },
+    { id: 'pepper', label: 'Pepper', file: null, emoji: '🌶️', aliases: ['pepper', 'chili', 'chilli', 'fresh pepper', 'pepper mix'] },
+    { id: 'palm-oil', label: 'Palm oil', file: null, emoji: '', aliases: ['palm oil', 'red oil'] },
+    { id: 'vegetable-oil', label: 'Vegetable oil', file: null, emoji: '', aliases: ['vegetable oil', 'cooking oil', 'groundnut oil', 'oil'] },
+    { id: 'egusi', label: 'Egusi', file: 'egusi.jpg', emoji: '', aliases: ['egusi', 'melon seed', 'ground melon seed'] },
+    { id: 'beans', label: 'Beans', file: null, emoji: '', aliases: ['bean', 'brown bean', 'black eyed bean', 'honey bean', 'ewa oloyin', 'peeled bean'] },
+    { id: 'yam', label: 'Yam', file: null, emoji: '', aliases: ['yam', 'white yam', 'puna yam', 'yam tuber'] },
+    { id: 'plantain', label: 'Plantain', file: null, emoji: '', aliases: ['plantain', 'dodo'] },
+    { id: 'crayfish', label: 'Crayfish', file: null, emoji: '', aliases: ['crayfish', 'ground crayfish'] },
+    { id: 'smoked-fish', label: 'Smoked fish', file: null, emoji: '', aliases: ['smoked fish', 'dry fish', 'dried fish', 'catfish', 'smoked catfish', 'dry catfish'] },
+    { id: 'stockfish', label: 'Stockfish', file: null, emoji: '', aliases: ['stockfish', 'stock fish', 'panla', 'okporoko'] },
+    { id: 'ugwu', label: 'Ugwu leaves', file: null, emoji: '', aliases: ['ugwu', 'pumpkin leaf', 'pumpkin leaves', 'fluted pumpkin'] },
+    { id: 'spinach', label: 'Spinach', file: null, emoji: '', aliases: ['spinach', 'efo', 'efo tete', 'shoko', 'tete'] },
+    { id: 'bitterleaf', label: 'Bitterleaf', file: null, emoji: '', aliases: ['bitterleaf', 'bitter leaf', 'onugbu'] },
+    { id: 'waterleaf', label: 'Waterleaf', file: null, emoji: '', aliases: ['waterleaf', 'water leaf'] },
+    { id: 'okra', label: 'Okra', file: null, emoji: '', aliases: ['okra', 'okro'] },
+    { id: 'ogbono', label: 'Ogbono', file: null, emoji: '', aliases: ['ogbono', 'african mango seed', 'ground ogbono'] },
+    { id: 'locust-beans', label: 'Locust beans (Iru)', file: null, emoji: '', aliases: ['locust bean', 'iru', 'ogiri'] },
+    { id: 'garlic', label: 'Garlic', file: null, emoji: '🧄', aliases: ['garlic'] },
+    { id: 'ginger', label: 'Ginger', file: null, emoji: '', aliases: ['ginger'] },
+    { id: 'beef', label: 'Beef & assorted meat', file: null, emoji: '🥩', aliases: ['beef', 'meat', 'assorted meat', 'shaki', 'ponmo', 'kpomo', 'cow tail', 'cow leg', 'minced beef', 'mince beef', 'goat meat', 'goat'] },
+    { id: 'chicken', label: 'Chicken', file: null, emoji: '🍗', aliases: ['chicken', 'turkey'] },
+    { id: 'eggs', label: 'Eggs', file: null, emoji: '🥚', aliases: ['egg', 'hard boiled egg'] },
+    { id: 'flour', label: 'Flour', file: null, emoji: '', aliases: ['flour', 'all purpose flour', 'plain flour', 'wheat flour'] },
+    { id: 'sugar', label: 'Sugar', file: null, emoji: '', aliases: ['sugar', 'granulated sugar'] },
+    { id: 'milk', label: 'Milk', file: null, emoji: '🥛', aliases: ['milk', 'evaporated milk'] },
+    { id: 'butter', label: 'Butter', file: null, emoji: '🧈', aliases: ['butter', 'margarine'] },
+    { id: 'honey', label: 'Honey', file: null, emoji: '🍯', aliases: ['honey'] },
+    { id: 'seasoning-cubes', label: 'Seasoning cubes', file: null, emoji: '', aliases: ['seasoning cube', 'stock cube', 'bouillon cube', 'maggi', 'knorr'] },
+    { id: 'salt', label: 'Salt', file: null, emoji: '🧂', aliases: ['salt'] },
+    { id: 'spices', label: 'Curry, thyme & bay leaves', file: null, emoji: '', aliases: ['curry powder', 'curry', 'thyme', 'dried thyme', 'bay leaf', 'bay leaves'] },
+    { id: 'yam-flour', label: 'Yam flour (Elubo)', file: 'yam-flour.jpg', emoji: '', aliases: ['yam flour', 'elubo', 'amala flour'] },
+    { id: 'ewedu', label: 'Ewedu leaves', file: null, emoji: '', aliases: ['ewedu', 'jute leaf', 'jute leaves'] },
+    { id: 'ogi', label: 'Ogi (corn paste)', file: null, emoji: '', aliases: ['ogi', 'corn paste', 'akamu', 'pap'] },
+    { id: 'prawns', label: 'Prawns', file: null, emoji: '🦐', aliases: ['prawn', 'shrimp'] },
+    { id: 'liver', label: 'Liver', file: null, emoji: '', aliases: ['liver', 'cow liver'] },
+    { id: 'potatoes', label: 'Potatoes', file: null, emoji: '🥔', aliases: ['potato', 'irish potato'] },
+    { id: 'carrots', label: 'Carrots', file: null, emoji: '🥕', aliases: ['carrot'] },
+    { id: 'mixed-vegetables', label: 'Mixed vegetables', file: null, emoji: '', aliases: ['mixed vegetable', 'green bean', 'green pea', 'sweetcorn'] },
+    { id: 'cabbage', label: 'Cabbage', file: null, emoji: '🥬', aliases: ['cabbage'] },
+    { id: 'palm-fruit', label: 'Palm fruit', file: 'palm-fruit.jpg', emoji: '', aliases: ['palm fruit', 'palm nut'] },
+    { id: 'suya-spice', label: 'Yaji (suya spice)', file: null, emoji: '', aliases: ['yaji', 'suya spice'] },
+    { id: 'broth', label: 'Stock / broth', file: null, emoji: '', aliases: ['stock', 'broth', 'bone broth', 'fish stock', 'chicken stock', 'beef stock'] },
+    { id: 'fresh-fish', label: 'Fresh fish', file: null, emoji: '', aliases: ['fresh fish', 'fresh catfish', 'croaker', 'fish', 'tilapia'] },
+    { id: 'garri', label: 'Garri', file: null, emoji: '', aliases: ['garri', 'gari', 'cassava flour'] },
+    { id: 'afang', label: 'Afang (Okazi) leaves', file: null, emoji: '', aliases: ['afang', 'okazi'] },
+    { id: 'fruit', label: 'Fresh fruit', file: null, emoji: '🍓', aliases: ['fruit', 'fresh fruit', 'sliced fruit'] }
+  ];
+
+  function normalizeKey(str) {
+    return (str || '')
+      .toString()
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/\(.*?\)/g, ' ')
+      .replace(/&/g, ' and ')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+  }
+
+  function singularToken(t) {
+    if (t.length > 3 && t.endsWith('ies')) return t.slice(0, -3) + 'y';
+    if (t.length > 3 && /(oes|ches|shes|xes)$/.test(t)) return t.slice(0, -2);
+    if (t.length > 3 && t.endsWith('s') && !t.endsWith('ss') && !t.endsWith('us')) return t.slice(0, -1);
+    return t;
+  }
+
+  function tokenizeName(str) {
+    const key = normalizeKey(str);
+    return key ? key.split(' ').map(singularToken) : [];
+  }
+
+  // Pre-tokenised alias index (built once)
+  const INGREDIENT_ALIAS_INDEX = [];
+  INGREDIENT_CATALOG.forEach(entry => {
+    entry.aliases.forEach(alias => {
+      const tokens = tokenizeName(alias);
+      if (tokens.length) INGREDIENT_ALIAS_INDEX.push({ id: entry.id, tokens });
+    });
+  });
+  const INGREDIENT_BY_ID = {};
+  INGREDIENT_CATALOG.forEach(entry => { INGREDIENT_BY_ID[entry.id] = entry; });
+
+  // Words that mean the text is a prepared dish, not a shoppable ingredient photo.
+  const NON_INGREDIENT_WORDS = ['stew', 'soup', 'sauce'];
+
+  // Maps free text ("2 cups Red onions (sliced)") to a catalogue id, or null.
+  // Whole-token phrase matching; the longest phrase wins, ties go to the head noun
+  // (the last matching phrase in the text).
+  function resolveIngredientId(name) {
+    let key = normalizeKey(name);
+    if (!key) return null;
+    const forIdx = key.indexOf(' for ');
+    if (forIdx > 0) key = key.slice(0, forIdx);
+    const tokens = key.split(' ').map(singularToken);
+    if (tokens.some(t => NON_INGREDIENT_WORDS.includes(t))) return null;
+
+    let best = null;
+    INGREDIENT_ALIAS_INDEX.forEach(entry => {
+      const n = entry.tokens.length;
+      for (let i = 0; i + n <= tokens.length; i++) {
+        let ok = true;
+        for (let j = 0; j < n; j++) {
+          if (tokens[i + j] !== entry.tokens[j]) { ok = false; break; }
+        }
+        if (ok && (!best || n > best.len || (n === best.len && i > best.pos))) {
+          best = { id: entry.id, len: n, pos: i };
+        }
+      }
+    });
+    return best ? best.id : null;
+  }
+
+  // Normalised-name -> recipe image id, built lazily from aliases + starter names.
+  let RECIPE_ALIAS_LOOKUP = null;
+  function buildRecipeAliasLookup() {
+    RECIPE_ALIAS_LOOKUP = {};
+    Object.keys(RECIPE_IMAGE_ALIASES).forEach(id => {
+      RECIPE_IMAGE_ALIASES[id].forEach(alias => { RECIPE_ALIAS_LOOKUP[normalizeKey(alias)] = id; });
+    });
+    STARTER_RECIPES.forEach(r => { RECIPE_ALIAS_LOOKUP[normalizeKey(r.name)] = r.id; });
+  }
+
+  // Exact (normalised) dish-name match -> library recipe id, else null.
+  function resolveRecipeImageId(name) {
+    if (!RECIPE_ALIAS_LOOKUP) buildRecipeAliasLookup();
+    const id = RECIPE_ALIAS_LOOKUP[normalizeKey(name)];
+    return id && RECIPE_IMAGE_FILES[id] ? id : null;
+  }
+
+  // After a rename: keep the current photo only if the new name still names that dish.
+  function nameStillMatchesImage(name, imageId) {
+    const hay = ' ' + normalizeKey(name) + ' ';
+    return (RECIPE_IMAGE_ALIASES[imageId] || []).some(a => hay.includes(' ' + normalizeKey(a) + ' '));
+  }
+
+  // Picks the image association for a recipe being saved (add or rename).
+  function pickRecipeImageId(name, previousImageId) {
+    if (previousImageId && RECIPE_IMAGE_FILES[previousImageId] && nameStillMatchesImage(name, previousImageId)) {
+      return previousImageId;
+    }
+    return resolveRecipeImageId(name);
+  }
+
+  function getRecipeImageId(recipe) {
+    if (!recipe) return null;
+    if (Object.prototype.hasOwnProperty.call(recipe, 'imageId')) {
+      return recipe.imageId && RECIPE_IMAGE_FILES[recipe.imageId] ? recipe.imageId : null;
+    }
+    return RECIPE_IMAGE_FILES[recipe.id] ? recipe.id : null;
+  }
+
+  // -> { src, lib, custom }  src = first choice, lib = library photograph (or '')
+  function getRecipeImage(recipe) {
+    const url = safeString(recipe && recipe.imageUrl);
+    const custom = url && !LEGACY_SEED_IMAGE_PATTERN.test(url) ? url : '';
+    const imageId = getRecipeImageId(recipe);
+    const lib = imageId ? IMAGE_PATHS.recipes + RECIPE_IMAGE_FILES[imageId] : '';
+    return { src: custom || lib || generateBespokeMealCard(recipe), lib, custom };
+  }
+
+  function ingredientTileSvg(name, emoji) {
+    const label = (name || 'Ingredient').toString().slice(0, 22);
+    const initial = Array.from(label.trim())[0] || '•';
+    const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const glyph = emoji
+      ? `<text x="100" y="112" font-size="70" text-anchor="middle">${emoji}</text>`
+      : `<text x="100" y="124" font-family="Georgia, serif" font-size="78" font-weight="700" fill="#dfb547" text-anchor="middle">${esc(initial.toUpperCase())}</text>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">` +
+      `<rect width="200" height="200" fill="#1d1419"/><rect x="6" y="6" width="188" height="188" rx="16" fill="none" stroke="#dfb547" stroke-opacity="0.45" stroke-width="2"/>` +
+      glyph +
+      `<text x="100" y="170" font-family="Arial, sans-serif" font-size="15" fill="#f5e4ab" text-anchor="middle">${esc(label)}</text></svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  }
+
+  // -> { src, lib, id, tile }  (photo of THIS ingredient, else an accurate labelled tile)
+  function getIngredientImage(item) {
+    const id = item && item.ingredientId !== undefined ? item.ingredientId : resolveIngredientId(item && item.name);
+    const entry = id ? INGREDIENT_BY_ID[id] : null;
+    const tile = ingredientTileSvg(entry ? entry.label : (item && item.name), entry ? entry.emoji : '');
+    const lib = entry && entry.file ? IMAGE_PATHS.ingredients + entry.file : '';
+    return { src: lib || tile, lib, id: id || null, tile };
+  }
+
+  function recipeImgHtml(recipe, opts = {}) {
+    const info = getRecipeImage(recipe);
+    const name = (recipe && recipe.name) || 'Meal';
+    return `<img class="food-img${opts.cls ? ' ' + opts.cls : ''}" src="${escapeHtml(info.src)}" alt="${escapeHtml(name)}"` +
+      `${opts.eager ? '' : ' loading="lazy"'} decoding="async" data-kind="recipe" data-lib="${escapeHtml(info.lib)}"` +
+      ` data-name="${escapeHtml(name)}" data-cat="${escapeHtml((recipe && recipe.category) || '')}"` +
+      ` data-origin="${escapeHtml((recipe && recipe.origin) || 'nigerian')}" data-region="${escapeHtml((recipe && recipe.region) || '')}">`;
+  }
+
+  function ingredientImgHtml(item, opts = {}) {
+    const info = getIngredientImage(item);
+    const name = (item && item.name) || 'Ingredient';
+    return `<img class="food-img${opts.cls ? ' ' + opts.cls : ''}" src="${escapeHtml(info.src)}" alt="${escapeHtml(name)}"` +
+      ` loading="lazy" decoding="async" data-kind="ingredient" data-lib="${escapeHtml(info.lib)}" data-tile="${escapeHtml(info.tile)}">`;
+  }
+
+  // Failure chain: (1) user URL -> library photo, (2) retry the library photo once,
+  // (3) the labelled card/tile for THIS item. Never another food's photograph.
+  function handleFoodImageError(img) {
+    if (!img || !img.dataset) return;
+    const stage = parseInt(img.dataset.stage || '0', 10);
+    if (stage >= 3) return;
+    img.dataset.stage = String(stage + 1);
+
+    const lib = img.dataset.lib || '';
+    const current = img.getAttribute('src') || '';
+    const onLib = lib && current.split('?')[0] === lib;
+
+    if (lib && !onLib && stage === 0) { img.src = lib; return; }
+    if (lib && stage <= 1) { img.src = lib + '?retry=' + Date.now(); return; }
+
+    if (img.dataset.kind === 'ingredient') {
+      img.src = img.dataset.tile || ingredientTileSvg(img.alt, '');
+    } else {
+      img.src = generateBespokeMealCard({
+        name: img.dataset.name || img.alt,
+        category: img.dataset.cat || 'meal',
+        origin: img.dataset.origin || 'nigerian',
+        region: img.dataset.region || ''
+      });
+    }
+  }
+
+  // Backwards-compatible entry point for any inline handlers
+  function handleImageError(imgEl) { handleFoodImageError(imgEl); }
+
+  // Give older saved data (recipes/inventory/shopping) their image associations.
+  // Never touches names, quantities, user-typed image URLs or any other user data.
+  function migrateImageAssociations() {
+    let recipesChanged = false;
+    state.recipes.forEach(r => {
+      if (!r) return;
+      if (!Object.prototype.hasOwnProperty.call(r, 'imageId')) {
+        r.imageId = RECIPE_IMAGE_FILES[r.id] ? r.id : resolveRecipeImageId(r.name);
+        recipesChanged = true;
+      }
+      if (r.imageUrl && LEGACY_SEED_IMAGE_PATTERN.test(r.imageUrl)) {
+        r.imageUrl = '';
+        recipesChanged = true;
+      }
+    });
+    if (recipesChanged) saveRecipes();
+
+    let invChanged = false;
+    state.inventory.forEach(i => {
+      if (i && i.ingredientId === undefined) { i.ingredientId = resolveIngredientId(i.name); invChanged = true; }
+    });
+    if (invChanged) saveInventory();
+
+    let shopChanged = false;
+    state.shopping.forEach(s => {
+      if (s && s.ingredientId === undefined) { s.ingredientId = resolveIngredientId(s.name); shopChanged = true; }
+    });
+    if (shopChanged) saveShopping();
+  }
+
+  // ----------------------------------------------------------------------------
   // 4. STARTER RECIPES COLLECTION (Curated with Authentic Photography & Verified Mapping)
   // ----------------------------------------------------------------------------
   const STARTER_RECIPES = [
@@ -181,7 +520,7 @@ const App = (function () {
       prepTime: 25,
       cookTime: 45,
       servings: 6,
-      imageUrl: 'https://images.unsplash.com/photo-1662116765994-1e4200c43589?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '3 cups Long grain parboiled rice',
         '6 Plum tomatoes',
@@ -524,7 +863,7 @@ const App = (function () {
       prepTime: 25,
       cookTime: 18,
       servings: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '500g Beef flank or sirloin (thinly sliced across grain)',
         '1/2 cup Yaji spice blend (roasted peanut powder, ginger, garlic, chili, cloves)',
@@ -632,7 +971,7 @@ const App = (function () {
       prepTime: 10,
       cookTime: 15,
       servings: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '2 cups All-purpose flour',
         '2 tbsp Granulated sugar',
@@ -696,7 +1035,8 @@ const App = (function () {
     inventory: [],
     planner: {},
     shopping: [],
-    userName: 'Sarah',
+    userName: '', // Never pre-filled: comes only from this browser's saved profile
+    hasProfile: false,
     greetingPref: 'all',
     currentGreetingIndex: 0,
     currentView: 'dashboard',
@@ -762,12 +1102,7 @@ const App = (function () {
     try {
       const isInit = localStorage.getItem(STORAGE_KEYS.INITIALIZED);
 
-      // Load user profile name & greeting pref
-      const savedName = localStorage.getItem(STORAGE_KEYS.USER_NAME);
-      state.userName = savedName ? savedName : 'Sarah';
-
-      const savedGreetingPref = localStorage.getItem(STORAGE_KEYS.GREETING_PREF);
-      state.greetingPref = savedGreetingPref || 'all';
+      loadUserProfile();
 
       if (!isInit) {
         // Seed first time
@@ -800,8 +1135,8 @@ const App = (function () {
       state.inventory = STARTER_INVENTORY;
       state.planner = STARTER_PLANNER;
       state.shopping = STARTER_SHOPPING;
-      state.userName = 'Sarah';
     }
+    migrateImageAssociations();
   }
 
   function saveRecipes() {
@@ -837,13 +1172,106 @@ const App = (function () {
   }
 
   function saveUserProfile(name, greetingPref) {
-    state.userName = safeString(name) || 'Sarah';
-    state.greetingPref = greetingPref || 'all';
-    localStorage.setItem(STORAGE_KEYS.USER_NAME, state.userName);
-    localStorage.setItem(STORAGE_KEYS.GREETING_PREF, state.greetingPref);
+    const cleanName = safeString(name).replace(/\s+/g, ' ').slice(0, 30);
+    if (!cleanName) return false; // never invent a name
+
+    const existing = readStoredProfile();
+    const now = new Date().toISOString();
+    const profile = {
+      name: cleanName,
+      greetingPref: greetingPref || 'all',
+      createdAt: existing && existing.createdAt ? existing.createdAt : now,
+      updatedAt: now
+    };
+
+    try {
+      localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(profile));
+    } catch (e) {
+      console.error('Error saving profile:', e);
+      showToast('Could not save your profile in this browser (storage unavailable).', 'error');
+      return false;
+    }
+
+    state.userName = profile.name;
+    state.greetingPref = profile.greetingPref;
+    state.hasProfile = true;
+    state.currentGreetingIndex = 0;
     updateUserInterfaceIdentity();
     renderDashboardGreeting();
-    showToast(`Welcome, ${state.userName}! Your preferences have been saved.`, 'success');
+    showToast(`Welcome, ${escapeHtml(state.userName)}! Your preferences have been saved on this device.`, 'success');
+    return true;
+  }
+
+  // Reads and validates the profile stored by THIS browser. Returns null if none.
+  function readStoredProfile() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.PROFILE);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed.name === 'string' && parsed.name.trim()) return parsed;
+    } catch (e) {
+      console.error('Error reading profile:', e);
+    }
+    return null;
+  }
+
+  function loadUserProfile() {
+    let profile = readStoredProfile();
+
+    // One-time migration: an earlier version stored the name the visitor typed
+    // under a different key in this same browser. Carry it over; never invent one.
+    if (!profile) {
+      try {
+        const legacyName = safeString(localStorage.getItem(STORAGE_KEYS.LEGACY_USER_NAME));
+        if (legacyName) {
+          const now = new Date().toISOString();
+          profile = {
+            name: legacyName.slice(0, 30),
+            greetingPref: localStorage.getItem(STORAGE_KEYS.LEGACY_GREETING_PREF) || 'all',
+            createdAt: now,
+            updatedAt: now
+          };
+          localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(profile));
+        }
+      } catch (e) {
+        console.error('Error migrating legacy profile:', e);
+      }
+    }
+
+    if (profile) {
+      state.userName = profile.name;
+      state.greetingPref = profile.greetingPref || 'all';
+      state.hasProfile = true;
+    } else {
+      state.userName = '';
+      state.greetingPref = 'all';
+      state.hasProfile = false;
+    }
+  }
+
+  // First-visit welcome screen: shown whenever this browser has no saved profile.
+  function showWelcomeSetupIfNeeded() {
+    if (state.hasProfile) return;
+    const input = document.getElementById('welcomeNameInput');
+    if (input) input.value = '';
+    openModal('welcomeSetupModal');
+    setTimeout(() => { if (input) input.focus(); }, 80);
+  }
+
+  function handleWelcomeSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById('welcomeNameInput');
+    const pref = document.getElementById('welcomeGreetingPref');
+    const name = safeString(input ? input.value : '');
+    if (!name) {
+      setFieldError('errWelcomeName', 'Please tell us what to call you');
+      if (input) input.focus();
+      return;
+    }
+    setFieldError('errWelcomeName', '');
+    if (saveUserProfile(name, pref ? pref.value : 'all')) {
+      closeModal('welcomeSetupModal');
+    }
   }
 
   // ----------------------------------------------------------------------------
@@ -950,18 +1378,19 @@ const App = (function () {
   }
 
   function updateUserInterfaceIdentity() {
-    const initial = (state.userName || 'S').charAt(0).toUpperCase();
+    const initial = state.userName ? Array.from(state.userName)[0].toUpperCase() : '•';
+    const displayName = state.userName || 'Your profile';
     
     // Topbar Profile Chip
     const topbarName = document.getElementById('topbarUserName');
     const topbarAvatar = document.getElementById('topbarAvatarLetter');
-    if (topbarName) topbarName.textContent = state.userName;
+    if (topbarName) topbarName.textContent = displayName;
     if (topbarAvatar) topbarAvatar.textContent = initial;
 
     // Sidebar Profile Card
     const sidebarName = document.getElementById('sidebarProfileName');
     const sidebarAvatar = document.getElementById('sidebarAvatarLetter');
-    if (sidebarName) sidebarName.textContent = state.userName;
+    if (sidebarName) sidebarName.textContent = displayName;
     if (sidebarAvatar) sidebarAvatar.textContent = initial;
   }
 
@@ -1001,19 +1430,23 @@ const App = (function () {
     const pool = list.length > 0 ? list : NIGERIAN_GREETINGS;
     const selected = pool[state.currentGreetingIndex % pool.length];
 
-    const userName = state.userName || 'Chef';
+    const userName = state.userName ? escapeHtml(state.userName) : '';
 
-    // Format personalized greeting: e.g. "Ẹ káàbọ̀, Sarah!" or "How far, Sarah? Wetin we dey cook today?"
+    // Format personalised greeting using ONLY this browser's saved name, e.g.
+    // "Good afternoon, Mey." / "Ẹ káàbọ̀, Mey!" / "How far, Mey? ..."
+    // Until a profile exists the greeting is name-free (the welcome screen is shown).
     let greetingText = '';
-    if (selected.text.includes('?')) {
+    if (!userName) {
+      greetingText = selected.text.replace(/[?!]$/, '') + '!';
+    } else if (selected.text.includes('?')) {
       greetingText = `${selected.text.replace('?', '')}, ${userName}?`;
     } else if (selected.text.includes('!')) {
       greetingText = `${selected.text.replace('!', '')}, ${userName}!`;
     } else {
-      greetingText = `${selected.text}, ${userName}!`;
+      greetingText = `${selected.text}, ${userName}${selected.punct || '!'}`;
     }
 
-    greetingEl.textContent = greetingText;
+    greetingEl.innerHTML = greetingText;
     if (langTagEl) langTagEl.textContent = `${selected.lang} Heritage`;
     if (subGreetingEl && selected.subtitle) {
       subGreetingEl.textContent = selected.subtitle;
@@ -1304,10 +1737,19 @@ const App = (function () {
 
       const row = document.createElement('div');
       row.className = 'today-meal-slot';
+      const thumbSource = recipeObj || (!isEmpty ? {
+        name: mealTitle,
+        category: slot,
+        origin: 'nigerian',
+        imageId: resolveRecipeImageId(mealTitle)
+      } : null);
       row.innerHTML = `
         <div class="slot-left">
-          <span class="slot-badge">${slot}</span>
-          <span class="slot-name ${isEmpty ? 'empty' : ''}">${mealTitle}</span>
+          ${thumbSource ? `<span class="today-thumb">${recipeImgHtml(thumbSource)}</span>` : ''}
+          <div class="slot-text">
+            <span class="slot-badge">${slot}</span>
+            <span class="slot-name ${isEmpty ? 'empty' : ''}">${escapeHtml(mealTitle)}</span>
+          </div>
         </div>
         <div class="slot-right">
           ${!isEmpty && recipeObj ? `
@@ -1341,15 +1783,13 @@ const App = (function () {
       state.currentSpotlightRecipeId = recipe.id;
     }
 
-    const imgSrc = recipe.imageUrl ? recipe.imageUrl : generateBespokeMealCard(recipe);
-
     container.innerHTML = `
       <div class="spotlight-img-wrap" onclick="App.openRecipeDetailModal('${recipe.id}')" style="cursor:pointer;">
-        <img src="${imgSrc}" alt="${recipe.name}" onerror="App.handleImageError(this, '${recipe.name}', '${recipe.category}', '${recipe.origin}')">
-        <span class="spotlight-pill">🇳🇬 ${recipe.region || 'Heritage'}</span>
+        ${recipeImgHtml(recipe, { eager: true })}
+        <span class="spotlight-pill">🇳🇬 ${escapeHtml(recipe.region || 'Heritage')}</span>
       </div>
       <div class="spotlight-body">
-        <h4 class="spotlight-title" onclick="App.openRecipeDetailModal('${recipe.id}')" style="cursor:pointer;">${recipe.name}</h4>
+        <h4 class="spotlight-title" onclick="App.openRecipeDetailModal('${recipe.id}')" style="cursor:pointer;">${escapeHtml(recipe.name)}</h4>
         <div class="spotlight-meta">
           <span>⏱️ ${recipe.prepTime + recipe.cookTime} mins total</span>
           <span>👥 ${recipe.servings} servings</span>
@@ -1468,36 +1908,25 @@ const App = (function () {
     });
   }
 
-  function handleImageError(imgEl, recipeName, category, origin) {
-    if (!imgEl) return;
-    imgEl.onerror = null; // Prevent recursion
-    imgEl.src = generateBespokeMealCard({
-      name: recipeName,
-      category: category,
-      origin: origin
-    });
-  }
-
   function createRecipeCard(recipe) {
     const card = document.createElement('div');
     card.className = 'recipe-card';
     card.dataset.id = recipe.id;
 
     const totalTime = (recipe.prepTime || 0) + (recipe.cookTime || 0);
-    const ingredientsSnippet = recipe.ingredients.slice(0, 3).join(', ') + (recipe.ingredients.length > 3 ? ` +${recipe.ingredients.length - 3} more` : '');
+    const ingredientsSnippet = escapeHtml(recipe.ingredients.slice(0, 3).join(', ') + (recipe.ingredients.length > 3 ? ` +${recipe.ingredients.length - 3} more` : ''));
     const isNigerian = recipe.origin === 'nigerian';
-    const imgSrc = recipe.imageUrl ? recipe.imageUrl : generateBespokeMealCard(recipe);
 
     card.innerHTML = `
       <div class="recipe-card-img-wrap" onclick="App.openRecipeDetailModal('${recipe.id}')">
-        <img src="${imgSrc}" alt="${recipe.name}" loading="lazy" onerror="App.handleImageError(this, '${recipe.name}', '${recipe.category}', '${recipe.origin}')">
+        ${recipeImgHtml(recipe)}
         <div class="recipe-top-tags">
-          <span class="recipe-cuisine-tag ${isNigerian ? '' : 'tag-intl'}">${isNigerian ? '🇳🇬 ' + (recipe.region || 'Nigerian Heritage') : '🌍 International'}</span>
-          <span class="recipe-category-tag">${recipe.category}</span>
+          <span class="recipe-cuisine-tag ${isNigerian ? '' : 'tag-intl'}">${isNigerian ? '🇳🇬 ' + escapeHtml(recipe.region || 'Nigerian Heritage') : '🌍 International'}</span>
+          <span class="recipe-category-tag">${escapeHtml(recipe.category)}</span>
         </div>
       </div>
       <div class="recipe-card-body">
-        <h3 class="recipe-title" onclick="App.openRecipeDetailModal('${recipe.id}')">${recipe.name}</h3>
+        <h3 class="recipe-title" onclick="App.openRecipeDetailModal('${recipe.id}')">${escapeHtml(recipe.name)}</h3>
         <div class="recipe-meta-row">
           <span class="recipe-meta-item" title="Preparation & Cooking time">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1643,7 +2072,9 @@ const App = (function () {
           servings,
           ingredients,
           instructions,
-          imageUrl
+          imageUrl,
+          // Keep the photo only while the name still describes that dish; otherwise re-resolve.
+          imageId: pickRecipeImageId(name, state.recipes[idx].imageId)
         };
         saveRecipes();
         showToast(`"${name}" updated successfully!`, 'success');
@@ -1661,6 +2092,7 @@ const App = (function () {
         ingredients,
         instructions,
         imageUrl,
+        imageId: resolveRecipeImageId(name),
         isCustom: true
       };
       state.recipes.unshift(newRecipe);
@@ -1710,8 +2142,7 @@ const App = (function () {
     document.getElementById('detailModalServings').textContent = `${recipe.servings} people`;
     
     const imgWrap = document.getElementById('detailImageWrap');
-    const imgSrc = recipe.imageUrl ? recipe.imageUrl : generateBespokeMealCard(recipe);
-    imgWrap.innerHTML = `<img src="${imgSrc}" alt="${recipe.name}" onerror="App.handleImageError(this, '${recipe.name}', '${recipe.category}', '${recipe.origin}')">`;
+    imgWrap.innerHTML = recipeImgHtml(recipe, { eager: true });
 
     const listEl = document.getElementById('detailIngredientsList');
     listEl.innerHTML = '';
@@ -1779,6 +2210,7 @@ const App = (function () {
             quantity: 1,
             unit: 'pieces',
             purchased: false,
+            ingredientId: resolveIngredientId(itemName),
             fromRecipe: recipe.name
           });
           addedCount++;
@@ -1878,7 +2310,6 @@ const App = (function () {
 
     const totalTime = recipe.prepTime + recipe.cookTime;
     const matchPct = totalCount > 0 ? Math.round((haveCount / totalCount) * 100) : 0;
-    const imgSrc = recipe.imageUrl ? recipe.imageUrl : generateBespokeMealCard(recipe);
 
     container.innerHTML = `
       <div class="suggestion-result-card">
@@ -1891,10 +2322,10 @@ const App = (function () {
         <div class="suggestion-result-body">
           <div class="sug-two-col">
             <div class="sug-image-box">
-              <img src="${imgSrc}" alt="${recipe.name}" onerror="App.handleImageError(this, '${recipe.name}', '${recipe.category}', '${recipe.origin}')">
+              ${recipeImgHtml(recipe, { eager: true })}
             </div>
             <div class="sug-info-col">
-              <h3>${recipe.name}</h3>
+              <h3>${escapeHtml(recipe.name)}</h3>
               <div class="sug-stats-strip">
                 <div class="sug-stat-item">
                   <strong>${recipe.prepTime} mins</strong>
@@ -2021,7 +2452,15 @@ const App = (function () {
           const isNigerian = !recipe || recipe.origin !== 'international';
           const region = (recipe && recipe.region) ? recipe.region : (isNigerian ? 'Nigerian Heritage' : 'Continental');
           const totalTime = recipe ? ((recipe.prepTime || 0) + (recipe.cookTime || 0)) : 35;
-          const imgSrc = (recipe && recipe.imageUrl) ? recipe.imageUrl : generateBespokeMealCard(recipe || { name: title, category: slot, origin: isNigerian ? 'nigerian' : 'international', region: region });
+          // Image follows the CURRENT recipe record (by id) so changing/editing the meal updates it;
+          // free-text meals use an exact dish-name match, otherwise a labelled card for that exact name.
+          const imageSource = recipe || {
+            name: title,
+            category: slot,
+            origin: isNigerian ? 'nigerian' : 'international',
+            region: region,
+            imageId: resolveRecipeImageId(title)
+          };
 
           slotDiv.innerHTML = `
             <div class="slot-item-header">
@@ -2032,7 +2471,7 @@ const App = (function () {
             </div>
             <div class="slot-card-main">
               <div class="slot-thumb-wrap" ${recipe ? `onclick="App.openRecipeDetailModal('${recipe.id}')"` : ''} title="Click to view recipe details">
-                <img src="${imgSrc}" alt="${escapeHtml(title)}" class="slot-thumb-img" onerror="App.handleImageError(this, '${escapeHtml(title)}', '${slot}', '${isNigerian ? 'nigerian' : 'international'}')">
+                ${recipeImgHtml(imageSource, { cls: 'slot-thumb-img' })}
               </div>
               <div class="slot-info-wrap">
                 <h4 class="slot-recipe-title" ${recipe ? `onclick="App.openRecipeDetailModal('${recipe.id}')"` : ''} title="${escapeHtml(title)}">${escapeHtml(title)}</h4>
@@ -2238,6 +2677,7 @@ const App = (function () {
                 quantity: 1,
                 unit: 'pieces',
                 purchased: false,
+                ingredientId: resolveIngredientId(itemName),
                 fromRecipe: `Weekly Plan (${recipe.name})`
               });
               totalAdded++;
@@ -2334,8 +2774,11 @@ const App = (function () {
       card.className = `inv-card ${statusClass}`;
       card.innerHTML = `
         <div class="inv-card-head">
-          <h4 class="inv-name">${item.name}</h4>
-          ${statusBadge}
+          <span class="ing-thumb">${ingredientImgHtml(item)}</span>
+          <div class="inv-title-wrap">
+            <h4 class="inv-name">${escapeHtml(item.name)}</h4>
+            ${statusBadge}
+          </div>
         </div>
         <div class="inv-card-details">
           <div class="inv-detail-row">
@@ -2434,7 +2877,9 @@ const App = (function () {
           quantity,
           unit,
           expiryDate,
-          threshold
+          threshold,
+          // Re-resolve from the (possibly renamed) name so the photo always matches the ingredient
+          ingredientId: resolveIngredientId(name)
         };
         saveInventory();
         showToast(`Updated "${name}" in inventory!`, 'success');
@@ -2446,7 +2891,8 @@ const App = (function () {
         quantity,
         unit,
         expiryDate,
-        threshold
+        threshold,
+        ingredientId: resolveIngredientId(name)
       };
       state.inventory.unshift(newItem);
       saveInventory();
@@ -2483,6 +2929,7 @@ const App = (function () {
       quantity: 1,
       unit: item.unit,
       purchased: false,
+      ingredientId: item.ingredientId !== undefined ? item.ingredientId : resolveIngredientId(item.name),
       fromRecipe: 'Replenishing Kitchen'
     });
 
@@ -2533,22 +2980,21 @@ const App = (function () {
       const card = document.createElement('div');
       card.className = `shopping-item-card ${item.purchased ? 'is-purchased' : ''}`;
       card.innerHTML = `
-        <div class="shopping-item-left">
-          <input type="checkbox" class="shopping-checkbox" ${item.purchased ? 'checked' : ''} onchange="App.toggleShoppingPurchased('${item.id}', this.checked)">
-          <div class="shopping-name-wrap">
-            <span class="shopping-item-name">${item.name}</span>
-            ${item.fromRecipe ? `<span class="shopping-item-source">For: ${item.fromRecipe}</span>` : ''}
-          </div>
+        <input type="checkbox" class="shopping-checkbox" aria-label="Mark ${escapeHtml(item.name)} as purchased" ${item.purchased ? 'checked' : ''} onchange="App.toggleShoppingPurchased('${item.id}', this.checked)">
+        <span class="ing-thumb ing-thumb-sm">${ingredientImgHtml(item)}</span>
+        <div class="shopping-name-wrap">
+          <span class="shopping-item-name">${escapeHtml(item.name)}</span>
+          ${item.fromRecipe ? `<span class="shopping-item-source">For: ${escapeHtml(item.fromRecipe)}</span>` : ''}
         </div>
-        <div class="toolbar-actions">
-          <span class="shopping-qty-pill">${item.quantity} ${item.unit}</span>
-          <button class="icon-btn" title="Edit item" onclick="App.openEditShoppingModal('${item.id}')" style="width:30px;height:30px;">
+        <div class="shopping-item-actions">
+          <span class="shopping-qty-pill">${escapeHtml(item.quantity)} ${escapeHtml(item.unit)}</span>
+          <button class="icon-btn" title="Edit item" aria-label="Edit ${escapeHtml(item.name)}" onclick="App.openEditShoppingModal('${item.id}')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
             </svg>
           </button>
-          <button class="icon-btn icon-btn-danger" title="Delete item" onclick="App.deleteShoppingItem('${item.id}')" style="width:30px;height:30px;">
+          <button class="icon-btn icon-btn-danger" title="Delete item" aria-label="Delete ${escapeHtml(item.name)}" onclick="App.deleteShoppingItem('${item.id}')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -2621,7 +3067,8 @@ const App = (function () {
           ...state.shopping[idx],
           name,
           quantity,
-          unit
+          unit,
+          ingredientId: resolveIngredientId(name)
         };
         saveShopping();
         showToast(`Updated "${name}"!`, 'success');
@@ -2633,6 +3080,7 @@ const App = (function () {
         quantity,
         unit,
         purchased: false,
+        ingredientId: resolveIngredientId(name),
         fromRecipe: 'Manual Entry'
       });
       saveShopping();
@@ -2701,7 +3149,8 @@ const App = (function () {
               quantity: shopItem.quantity,
               unit: shopItem.unit,
               expiryDate: getFutureDate(30),
-              threshold: 2
+              threshold: 2,
+              ingredientId: shopItem.ingredientId !== undefined ? shopItem.ingredientId : resolveIngredientId(shopItem.name)
             });
           }
           movedCount++;
@@ -2791,21 +3240,28 @@ const App = (function () {
       });
     });
 
-    // Close on backdrop click
+    // Close on backdrop click (the first-visit welcome screen is intentionally not dismissable)
     document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
       backdrop.addEventListener('click', (e) => {
+        if (backdrop.dataset.locked === 'true') return;
         if (e.target === backdrop) {
           backdrop.classList.remove('open');
         }
       });
     });
 
-    // ESC key closes modals
+    // ESC key closes modals (except the locked welcome screen)
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+        document.querySelectorAll('.modal-backdrop.open').forEach(m => {
+          if (m.dataset.locked !== 'true') m.classList.remove('open');
+        });
       }
     });
+
+    // First-visit Welcome Form
+    const welcomeForm = document.getElementById('welcomeSetupForm');
+    if (welcomeForm) welcomeForm.addEventListener('submit', handleWelcomeSubmit);
 
     // Profile Setup Form
     const profileForm = document.getElementById('userProfileForm');
@@ -2962,10 +3418,17 @@ const App = (function () {
   // 19. INITIALIZATION BOOTSTRAP
   // ----------------------------------------------------------------------------
   function init() {
+    // One delegated listener covers every food image (error events do not bubble, so capture)
+    document.addEventListener('error', (e) => {
+      const el = e.target;
+      if (el && el.tagName === 'IMG' && el.classList.contains('food-img')) handleFoodImageError(el);
+    }, true);
+
     loadData();
     initEventListeners();
     updateUserInterfaceIdentity();
     navigate('dashboard');
+    showWelcomeSetupIfNeeded();
   }
 
   if (document.readyState === 'loading') {
@@ -3001,6 +3464,11 @@ const App = (function () {
     movePurchasedToInventory,
     clearPurchasedShopping,
     handleImageError,
+    handleFoodImageError,
+    resolveIngredientId,
+    resolveRecipeImageId,
+    getRecipeImage,
+    getIngredientImage,
     generateBespokeMealCard,
     toast: showToast,
     confirm: showConfirm

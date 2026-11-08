@@ -100,9 +100,9 @@
       <!-- Sidebar User Profile & Heritage Footer -->
       <div class="sidebar-footer">
         <div class="user-profile-card" id="sidebarProfileCard" onclick="App.openProfileModal()" role="button" tabindex="0" title="Click to personalise your name & greeting preferences">
-          <div class="profile-avatar-circle" id="sidebarAvatarLetter">S</div>
+          <div class="profile-avatar-circle" id="sidebarAvatarLetter">•</div>
           <div class="profile-info-wrap">
-            <span class="profile-greeting-name" id="sidebarProfileName">Sarah</span>
+            <span class="profile-greeting-name" id="sidebarProfileName">Your profile</span>
             <span class="profile-action-hint">Personalise Profile &bull; ✎</span>
           </div>
         </div>
@@ -139,8 +139,8 @@
         <div class="topbar-right">
           <!-- Personalised Profile Chip -->
           <button class="topbar-profile-btn" id="topbarProfileBtn" onclick="App.openProfileModal()" title="Edit preferred name">
-            <span class="topbar-avatar" id="topbarAvatarLetter">S</span>
-            <span class="topbar-username" id="topbarUserName">Sarah</span>
+            <span class="topbar-avatar" id="topbarAvatarLetter">•</span>
+            <span class="topbar-username" id="topbarUserName">Your profile</span>
           </button>
 
           <span class="topbar-date" id="topbarDate"></span>
@@ -181,7 +181,7 @@
               </div>
 
               <!-- Main Personalised Greeting Title -->
-              <h2 class="welcome-title" id="dashboardGreeting">Ẹ káàbọ̀, Sarah!</h2>
+              <h2 class="welcome-title" id="dashboardGreeting">Welcome!</h2>
               <p class="welcome-desc" id="dashboardSubGreeting">
                 Welcome to your kitchen. Plan vibrant meals, explore authentic Nigerian culinary heritage, match ingredients you already have, and organize your weekly dining with elegance.
               </p>
@@ -683,6 +683,47 @@
 
 
   <!-- ============================================== -->
+  <!-- MODAL: FIRST-VISIT WELCOME / PROFILE SETUP     -->
+  <!-- Shown whenever this browser has no saved profile. Locked (no close, no ESC). -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop welcome-setup" id="welcomeSetupModal" data-locked="true" role="dialog" aria-modal="true" aria-labelledby="welcomeSetupTitle">
+    <div class="modal-card modal-card-sm">
+      <div class="modal-header">
+        <h3 class="modal-title" id="welcomeSetupTitle">Welcome to MealMap</h3>
+      </div>
+      <form id="welcomeSetupForm" class="modal-body" autocomplete="off" novalidate>
+        <div class="profile-modal-badge">🇳🇬 Your Kitchen, Your Name</div>
+        <p class="form-hint-text">
+          Let us make this kitchen yours. What should we call you? Your name is saved only in this browser, on this device &mdash; nobody else who opens MealMap will see it.
+        </p>
+
+        <div class="form-group" style="margin-top: 1.15rem;">
+          <label for="welcomeNameInput">Your Preferred Name <span class="req">*</span></label>
+          <input type="text" id="welcomeNameInput" class="form-control" placeholder="e.g. Ada, Tunde, Alex" maxlength="30" autocomplete="given-name">
+          <span class="field-error" id="errWelcomeName"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="welcomeGreetingPref">Preferred Greeting Dialect</label>
+          <select id="welcomeGreetingPref" class="form-control">
+            <option value="all">Pan-Nigerian (Randomly shuffle all languages)</option>
+            <option value="yoruba">Yoruba</option>
+            <option value="igbo">Igbo</option>
+            <option value="hausa">Hausa</option>
+            <option value="pidgin">Nigerian Pidgin</option>
+            <option value="english">Warm English</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" id="welcomeSubmitBtn">Start Cooking</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ============================================== -->
   <!-- MODAL: USER PROFILE & PERSONALISATION -->
   <!-- ============================================== -->
   <div class="modal-backdrop" id="userProfileModal" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
@@ -694,12 +735,12 @@
       <form id="userProfileForm" class="modal-body">
         <div class="profile-modal-badge">🇳🇬 Cultural Personalisation</div>
         <p class="form-hint-text">
-          Enter your preferred name so MealMap can warmly greet you in authentic Nigerian languages every time you cook.
+          Enter your preferred name so MealMap can warmly greet you in authentic Nigerian languages every time you cook. Your profile is stored only in this browser on this device.
         </p>
 
         <div class="form-group" style="margin-top: 1.15rem;">
           <label for="userNameInput">Your Preferred Name <span class="req">*</span></label>
-          <input type="text" id="userNameInput" class="form-control" placeholder="e.g. Sarah, Mey, Alex" maxlength="30" required>
+          <input type="text" id="userNameInput" class="form-control" placeholder="e.g. Ada, Tunde, Alex" maxlength="30" required>
           <span class="field-error" id="errUserName"></span>
         </div>
 
