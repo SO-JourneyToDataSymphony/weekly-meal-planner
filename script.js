@@ -120,16 +120,18 @@ const App = (function () {
       <svg xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480">
         <defs>
           <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#380b16"/>
-            <stop offset="50%" stop-color="#520e1d"/>
-            <stop offset="100%" stop-color="#24060c"/>
+            <stop offset="0%" stop-color="#140d12"/>
+            <stop offset="45%" stop-color="#2e0915"/>
+            <stop offset="85%" stop-color="#180e14"/>
+            <stop offset="100%" stop-color="#0a0608"/>
           </linearGradient>
           <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#dfb547"/>
-            <stop offset="100%" stop-color="#ad8322"/>
+            <stop offset="0%" stop-color="#fae392"/>
+            <stop offset="50%" stop-color="#dfb547"/>
+            <stop offset="100%" stop-color="#ad831c"/>
           </linearGradient>
           <pattern id="motif" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 0 20 L 20 0 L 40 20 L 20 40 Z" fill="none" stroke="rgba(223, 181, 71, 0.04)" stroke-width="1"/>
+            <path d="M 0 20 L 20 0 L 40 20 L 20 40 Z" fill="none" stroke="rgba(223, 181, 71, 0.05)" stroke-width="1"/>
           </pattern>
         </defs>
 
@@ -142,24 +144,24 @@ const App = (function () {
         <rect x="28" y="28" width="744" height="424" rx="10" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1"/>
 
         <!-- Top Badges -->
-        <rect x="45" y="45" width="220" height="32" rx="16" fill="rgba(255, 255, 255, 0.12)"/>
+        <rect x="45" y="45" width="220" height="32" rx="16" fill="rgba(255, 255, 255, 0.1)"/>
         <text x="155" y="66" fill="#f5e4ab" font-family="'DM Sans', sans-serif" font-size="12" font-weight="700" letter-spacing="1.2" text-anchor="middle">${cleanRegion}</text>
 
-        <rect x="620" y="45" width="135" height="32" rx="16" fill="rgba(197, 155, 39, 0.2)"/>
+        <rect x="620" y="45" width="135" height="32" rx="16" fill="rgba(223, 181, 71, 0.2)"/>
         <text x="687" y="66" fill="#ffffff" font-family="'DM Sans', sans-serif" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">${cleanCategory}</text>
 
         <!-- Central Culinary Emblem -->
-        <circle cx="400" cy="180" r="62" fill="rgba(255, 255, 255, 0.05)" stroke="url(#goldGrad)" stroke-width="1.5"/>
+        <circle cx="400" cy="180" r="62" fill="rgba(255, 255, 255, 0.04)" stroke="url(#goldGrad)" stroke-width="1.5"/>
         <text x="400" y="196" font-size="64" text-anchor="middle" dominant-baseline="middle">${glyph}</text>
 
-        <text x="400" y="260" fill="rgba(223, 181, 71, 0.75)" font-family="'DM Sans', sans-serif" font-size="11" font-weight="600" letter-spacing="2" text-anchor="middle">${escapeXml(iconLabel.toUpperCase())}</text>
+        <text x="400" y="260" fill="rgba(223, 181, 71, 0.85)" font-family="'DM Sans', sans-serif" font-size="11" font-weight="600" letter-spacing="2" text-anchor="middle">${escapeXml(iconLabel.toUpperCase())}</text>
 
         <!-- Dish Exact Name in Playfair Serif -->
-        <text x="400" y="325" fill="#ffffff" font-family="'Playfair Display', Georgia, serif" font-size="34" font-weight="800" text-anchor="middle" letter-spacing="-0.5">${cleanTitle}</text>
+        <text x="400" y="325" fill="#fcf9f2" font-family="'Playfair Display', Georgia, serif" font-size="34" font-weight="800" text-anchor="middle" letter-spacing="-0.5">${cleanTitle}</text>
 
         <!-- Subtle Branded Footer -->
         <line x1="320" y1="365" x2="480" y2="365" stroke="url(#goldGrad)" stroke-width="1" stroke-opacity="0.5"/>
-        <text x="400" y="398" fill="rgba(255, 255, 255, 0.6)" font-family="'DM Sans', sans-serif" font-size="13" font-weight="500" letter-spacing="0.8" text-anchor="middle">MealMap Verified Recipe &bull; Authentic Cuisine</text>
+        <text x="400" y="398" fill="rgba(255, 255, 255, 0.65)" font-family="'DM Sans', sans-serif" font-size="13" font-weight="500" letter-spacing="0.8" text-anchor="middle">MealMap Verified Recipe &bull; Authentic Cuisine</text>
       </svg>
     `;
 
@@ -741,6 +743,16 @@ const App = (function () {
 
   function safeString(str) {
     return (str || '').toString().trim();
+  }
+
+  function escapeHtml(str) {
+    return (str || '')
+      .toString()
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   // ----------------------------------------------------------------------------
@@ -2003,30 +2015,42 @@ const App = (function () {
             if (recipe) title = recipe.name;
           }
 
+          const isNigerian = !recipe || recipe.origin !== 'international';
+          const region = (recipe && recipe.region) ? recipe.region : (isNigerian ? 'Nigerian Heritage' : 'Continental');
+          const totalTime = recipe ? ((recipe.prepTime || 0) + (recipe.cookTime || 0)) : 35;
+          const imgSrc = (recipe && recipe.imageUrl) ? recipe.imageUrl : generateBespokeMealCard(recipe || { name: title, category: slot, origin: isNigerian ? 'nigerian' : 'international', region: region });
+
           slotDiv.innerHTML = `
             <div class="slot-item-header">
               <span class="slot-type-label">${slot}</span>
-              ${recipe && recipe.origin === 'nigerian' ? '<span class="badge badge-wine" style="font-size:0.68rem;">🇳🇬 Nigerian</span>' : ''}
+              <span class="badge ${isNigerian ? 'badge-wine' : 'badge-subtle'}" style="font-size:0.68rem;">
+                ${isNigerian ? '🇳🇬 ' + escapeHtml(region) : '🌍 ' + escapeHtml(region)}
+              </span>
             </div>
-            <div class="slot-item-content">
-              <span class="slot-recipe-title">${title}</span>
+            <div class="slot-card-main">
+              <div class="slot-thumb-wrap" ${recipe ? `onclick="App.openRecipeDetailModal('${recipe.id}')"` : ''} title="Click to view recipe details">
+                <img src="${imgSrc}" alt="${escapeHtml(title)}" class="slot-thumb-img" onerror="App.handleImageError(this, '${escapeHtml(title)}', '${slot}', '${isNigerian ? 'nigerian' : 'international'}')">
+              </div>
+              <div class="slot-info-wrap">
+                <h4 class="slot-recipe-title" ${recipe ? `onclick="App.openRecipeDetailModal('${recipe.id}')"` : ''} title="${escapeHtml(title)}">${escapeHtml(title)}</h4>
+                <div class="slot-meta-strip">
+                  <span class="slot-time-chip">⏱️ ${totalTime}m</span>
+                  ${recipe && recipe.servings ? `<span class="slot-servings-chip">👥 ${recipe.servings}p</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <div class="slot-card-footer">
               <div class="slot-actions-group">
                 ${recipe ? `
-                  <button class="icon-btn" title="View Recipe" onclick="App.openRecipeDetailModal('${recipe.id}')" style="width:28px;height:28px;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
-                      <circle cx="11" cy="11" r="8"></circle>
-                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
+                  <button class="btn btn-outline btn-xs" onclick="App.openRecipeDetailModal('${recipe.id}')" title="View recipe details">
+                    View
                   </button>
                 ` : ''}
-                <button class="icon-btn" title="Change Meal" onclick="App.openAssignPlannerModal('${day}', '${slot}', '${planItem.recipeId || ''}')" style="width:28px;height:28px;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
+                <button class="btn btn-ghost btn-xs" onclick="App.openAssignPlannerModal('${day}', '${slot}', '${planItem.recipeId || ''}')" title="Change meal">
+                  Change
                 </button>
                 <button class="icon-btn icon-btn-danger" title="Remove from Plan" onclick="App.removePlannedMeal('${day}', '${slot}')" style="width:28px;height:28px;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                   </svg>
@@ -2040,7 +2064,8 @@ const App = (function () {
               <span class="slot-type-label">${slot}</span>
             </div>
             <button class="slot-empty-btn" onclick="App.openAssignPlannerModal('${day}', '${slot}')">
-              <span>+</span> Plan ${slot}
+              <span class="slot-empty-icon">+</span>
+              <span>Plan ${slot.charAt(0).toUpperCase() + slot.slice(1)}</span>
             </button>
           `;
         }

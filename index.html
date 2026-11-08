@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MealMap — Authentic Nigerian Cuisine & Weekly Meal Planner</title>
+  <title>MealMap — Authentic Nigerian Food Guide & Weekly Meal Planner</title>
   
   <!-- Premium Typography: Playfair Display (Serif Headings) & DM Sans (Modern Interface) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -193,7 +193,7 @@
                 </button>
                 <button class="btn btn-ghost" onclick="App.navigate('planner')">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <rect x="3" y="4" width="18" height="18" rx="2"></rect>
                     <line x1="16" y1="2" x2="16" y2="6"></line>
                     <line x1="8" y1="2" x2="8" y2="6"></line>
                   </svg>
@@ -502,7 +502,7 @@
 
           <!-- Planner Grid (Monday - Sunday) -->
           <div class="planner-grid" id="plannerGrid">
-            <!-- Dynamically populated 7 day cards, each with breakfast, lunch, dinner, snack -->
+            <!-- Dynamically populated 7 day cards, each with breakfast, lunch, dinner, snack and food images -->
           </div>
 
         </section>
@@ -652,7 +652,7 @@
         </button>
         <button class="mobile-nav-item" data-view="planner">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <rect x="3" y="4" width="18" height="18" rx="2"></rect>
             <line x1="16" y1="2" x2="16" y2="6"></line>
             <line x1="8" y1="2" x2="8" y2="6"></line>
           </svg>
@@ -693,7 +693,7 @@
           Enter your preferred name so MealMap can warmly greet you in authentic Nigerian languages every time you cook.
         </p>
 
-        <div class="form-group" style="margin-top: 1rem;">
+        <div class="form-group" style="margin-top: 1.15rem;">
           <label for="userNameInput">Your Preferred Name <span class="req">*</span></label>
           <input type="text" id="userNameInput" class="form-control" placeholder="e.g. Sarah, Mey, Alex" maxlength="30" required>
           <span class="field-error" id="errUserName"></span>
