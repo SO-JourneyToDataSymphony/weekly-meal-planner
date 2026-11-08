@@ -1,12 +1,11 @@
 /**
  * ==============================================================================
- * MEALMAP APP — SCRIPT.JS
- * Complete Nigerian Food Guide, Kitchen Inventory & Weekly Meal Planner
+ * MEALMAP APP — SCRIPT.JS (LUXURY CULINARY EDITION)
+ * Authentic Nigerian Food Guide, Kitchen Inventory & Weekly Meal Planner
  * Pure Vanilla JavaScript (Zero external dependencies, 100% localStorage)
  * ==============================================================================
  */
 
-// Wrap entire application logic in an IIFE or App namespace for clean scoping
 const App = (function () {
   'use strict';
 
@@ -18,6 +17,8 @@ const App = (function () {
     INVENTORY: 'mealmap_inventory_data',
     PLANNER: 'mealmap_planner_data',
     SHOPPING: 'mealmap_shopping_data',
+    USER_NAME: 'mealmap_user_name',
+    GREETING_PREF: 'mealmap_greeting_pref',
     INITIALIZED: 'mealmap_is_initialized'
   };
 
@@ -25,7 +26,148 @@ const App = (function () {
   const MEAL_SLOTS = ['breakfast', 'lunch', 'dinner', 'snack'];
 
   // ----------------------------------------------------------------------------
-  // 2. STARTER DATA (Nigerian Heritage Collection & Essentials)
+  // 2. NIGERIAN MULTI-LINGUAL GREETINGS POOL
+  // ----------------------------------------------------------------------------
+  const NIGERIAN_GREETINGS = [
+    // Yoruba
+    { lang: 'Yoruba', text: 'Ẹ káàbọ̀', timeOfDay: 'any', subtitle: 'Welcome to your kitchen!' },
+    { lang: 'Yoruba', text: 'Ẹ kú àárọ̀', timeOfDay: 'morning', subtitle: 'Good morning! What are we cooking today?' },
+    { lang: 'Yoruba', text: 'Ẹ kú ọ̀sán', timeOfDay: 'afternoon', subtitle: 'Good afternoon! Time for a hearty lunch.' },
+    { lang: 'Yoruba', text: 'Ẹ kú alẹ́', timeOfDay: 'evening', subtitle: 'Good evening! Ready for a comforting dinner?' },
+    { lang: 'Yoruba', text: 'Oúnjẹ aládùn ń bọ̀', timeOfDay: 'any', subtitle: 'Delicious food is on the way!' },
+
+    // Igbo
+    { lang: 'Igbo', text: 'Nnọọ', timeOfDay: 'any', subtitle: 'Welcome back to your kitchen!' },
+    { lang: 'Igbo', text: 'Ụtụtụ ọma', timeOfDay: 'morning', subtitle: 'Good morning! Let us make something delicious.' },
+    { lang: 'Igbo', text: 'Ehihie ọma', timeOfDay: 'afternoon', subtitle: 'Good afternoon! Ready for a wonderful meal?' },
+    { lang: 'Igbo', text: 'Mgbede ọma', timeOfDay: 'evening', subtitle: 'Good evening! Time to wind down and dine.' },
+    { lang: 'Igbo', text: 'Nri dị ụtọ', timeOfDay: 'any', subtitle: 'Tasty authentic delicacies await you.' },
+
+    // Hausa
+    { lang: 'Hausa', text: 'Sannu', timeOfDay: 'any', subtitle: 'Greetings! Let us prepare a wonderful feast.' },
+    { lang: 'Hausa', text: 'Ina kwana', timeOfDay: 'morning', subtitle: 'Good morning! Hope you had a restful night.' },
+    { lang: 'Hausa', text: 'Barka da rana', timeOfDay: 'afternoon', subtitle: 'Good afternoon! Time for an energizing lunch.' },
+    { lang: 'Hausa', text: 'Barka da yamma', timeOfDay: 'evening', subtitle: 'Good evening! Enjoy your evening dinner.' },
+    { lang: 'Hausa', text: 'Barka da zuwa', timeOfDay: 'any', subtitle: 'Welcome warmly to your kitchen sanctuary.' },
+
+    // Nigerian Pidgin
+    { lang: 'Nigerian Pidgin', text: 'How far', timeOfDay: 'any', subtitle: 'Wetin we dey cook today? Body go sweet you!' },
+    { lang: 'Nigerian Pidgin', text: 'You don chop?', timeOfDay: 'any', subtitle: 'Make we prepare correct original chow!' },
+    { lang: 'Nigerian Pidgin', text: 'Abeg, wetin we go cook today?', timeOfDay: 'any', subtitle: 'Check your pantry and let us make magic.' },
+
+    // Edo & Urhobo
+    { lang: 'Edo', text: 'Kóyo', timeOfDay: 'any', subtitle: 'Warm greetings from the heart of Benin heritage!' },
+    { lang: 'Urhobo', text: 'Migwo', timeOfDay: 'any', subtitle: 'Respectful greetings! Welcome to your kitchen.' },
+
+    // English
+    { lang: 'English', text: 'Welcome to your kitchen', timeOfDay: 'any', subtitle: 'Let’s make something truly delicious today.' },
+    { lang: 'English', text: 'Good to have you here', timeOfDay: 'any', subtitle: 'Your weekly culinary planner is ready.' }
+  ];
+
+  // ----------------------------------------------------------------------------
+  // 3. BESPOKE MEAL ART SVG GENERATOR (Accurate Neutral Visuals)
+  // Ensures every meal has an exact visual representation and never a wrong photo
+  // ----------------------------------------------------------------------------
+  function generateBespokeMealCard(recipe) {
+    const name = (recipe && recipe.name) ? recipe.name : 'Heritage Meal';
+    const category = (recipe && recipe.category) ? recipe.category.toUpperCase() : 'MEAL';
+    const region = (recipe && recipe.region) ? recipe.region : 'Heritage Nigerian';
+    const isNigerian = !recipe || recipe.origin !== 'international';
+
+    // Tailored culinary glyph based on recipe name / type
+    const lower = name.toLowerCase();
+    let glyph = '🍲';
+    let iconLabel = 'Tradition';
+
+    if (lower.includes('jollof') || lower.includes('rice')) {
+      glyph = '🍚';
+      iconLabel = 'Grain Platter';
+    } else if (lower.includes('egusi') || lower.includes('soup') || lower.includes('efo') || lower.includes('banga') || lower.includes('okra') || lower.includes('ogbono') || lower.includes('afang') || lower.includes('edikang')) {
+      glyph = '🍲';
+      iconLabel = 'Heritage Soup Pot';
+    } else if (lower.includes('pounded yam') || lower.includes('iyan') || lower.includes('amala') || lower.includes('eba') || lower.includes('fufu') || lower.includes('swallow')) {
+      glyph = '🥣';
+      iconLabel = 'Swallow & Mortar';
+    } else if (lower.includes('suya') || lower.includes('beef')) {
+      glyph = '🍢';
+      iconLabel = 'Yaji Spiced Grill';
+    } else if (lower.includes('puff') || lower.includes('akara') || lower.includes('pie') || lower.includes('snack')) {
+      glyph = '🥟';
+      iconLabel = 'Artisanal Pastry';
+    } else if (lower.includes('ogi') || lower.includes('pap') || lower.includes('pancake')) {
+      glyph = '🥞';
+      iconLabel = 'Morning Comfort';
+    } else if (lower.includes('pasta')) {
+      glyph = '🍝';
+      iconLabel = 'Continental Cuisine';
+    }
+
+    // Clean escaping for SVG XML
+    const escapeXml = (unsafe) => {
+      return (unsafe || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    };
+
+    const cleanTitle = escapeXml(name);
+    const cleanCategory = escapeXml(category);
+    const cleanRegion = escapeXml(isNigerian ? `🇳🇬 ${region}` : `🌍 ${region}`);
+
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480">
+        <defs>
+          <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#380b16"/>
+            <stop offset="50%" stop-color="#520e1d"/>
+            <stop offset="100%" stop-color="#24060c"/>
+          </linearGradient>
+          <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#dfb547"/>
+            <stop offset="100%" stop-color="#ad8322"/>
+          </linearGradient>
+          <pattern id="motif" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 0 20 L 20 0 L 40 20 L 20 40 Z" fill="none" stroke="rgba(223, 181, 71, 0.04)" stroke-width="1"/>
+          </pattern>
+        </defs>
+
+        <!-- Luxury Textured Background -->
+        <rect width="800" height="480" fill="url(#bgGrad)"/>
+        <rect width="800" height="480" fill="url(#motif)"/>
+
+        <!-- Gold Ornamental Border -->
+        <rect x="20" y="20" width="760" height="440" rx="14" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-opacity="0.45"/>
+        <rect x="28" y="28" width="744" height="424" rx="10" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1"/>
+
+        <!-- Top Badges -->
+        <rect x="45" y="45" width="220" height="32" rx="16" fill="rgba(255, 255, 255, 0.12)"/>
+        <text x="155" y="66" fill="#f5e4ab" font-family="'DM Sans', sans-serif" font-size="12" font-weight="700" letter-spacing="1.2" text-anchor="middle">${cleanRegion}</text>
+
+        <rect x="620" y="45" width="135" height="32" rx="16" fill="rgba(197, 155, 39, 0.2)"/>
+        <text x="687" y="66" fill="#ffffff" font-family="'DM Sans', sans-serif" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">${cleanCategory}</text>
+
+        <!-- Central Culinary Emblem -->
+        <circle cx="400" cy="180" r="62" fill="rgba(255, 255, 255, 0.05)" stroke="url(#goldGrad)" stroke-width="1.5"/>
+        <text x="400" y="196" font-size="64" text-anchor="middle" dominant-baseline="middle">${glyph}</text>
+
+        <text x="400" y="260" fill="rgba(223, 181, 71, 0.75)" font-family="'DM Sans', sans-serif" font-size="11" font-weight="600" letter-spacing="2" text-anchor="middle">${escapeXml(iconLabel.toUpperCase())}</text>
+
+        <!-- Dish Exact Name in Playfair Serif -->
+        <text x="400" y="325" fill="#ffffff" font-family="'Playfair Display', Georgia, serif" font-size="34" font-weight="800" text-anchor="middle" letter-spacing="-0.5">${cleanTitle}</text>
+
+        <!-- Subtle Branded Footer -->
+        <line x1="320" y1="365" x2="480" y2="365" stroke="url(#goldGrad)" stroke-width="1" stroke-opacity="0.5"/>
+        <text x="400" y="398" fill="rgba(255, 255, 255, 0.6)" font-family="'DM Sans', sans-serif" font-size="13" font-weight="500" letter-spacing="0.8" text-anchor="middle">MealMap Verified Recipe &bull; Authentic Cuisine</text>
+      </svg>
+    `;
+
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg.trim());
+  }
+
+  // ----------------------------------------------------------------------------
+  // 4. STARTER RECIPES COLLECTION (Curated with Authentic Photography & Verified Mapping)
   // ----------------------------------------------------------------------------
   const STARTER_RECIPES = [
     {
@@ -33,11 +175,11 @@ const App = (function () {
       name: 'Smoky Party Jollof Rice',
       category: 'lunch',
       origin: 'nigerian',
-      region: 'Pan-Nigerian',
+      region: 'Pan-Nigerian Celebration',
       prepTime: 25,
       cookTime: 45,
       servings: 6,
-      imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1662116765994-1e4200c43589?auto=format&fit=crop&w=800&q=80',
       ingredients: [
         '3 cups Long grain parboiled rice',
         '6 Plum tomatoes',
@@ -45,7 +187,7 @@ const App = (function () {
         '3 Scotch bonnet peppers (Rodo)',
         '2 Large red onions',
         '3 tbsp Tomato paste',
-        '3 cups Chicken or beef stock',
+        '3 cups Rich chicken or beef stock',
         '1 tbsp Curry powder',
         '1 tbsp Dried thyme',
         '3 Dried bay leaves',
@@ -53,18 +195,18 @@ const App = (function () {
         '1 cup Vegetable oil',
         '1 tsp Salt'
       ],
-      instructions: `1. Blend the fresh tomatoes, tatashe, scotch bonnet peppers, and 1 onion until smooth. Pour into a pot and boil until the water reduces completely.\n2. In a deep heavy pot, heat vegetable oil and melt the butter. Add finely sliced onions and fry until translucent.\n3. Add tomato paste and fry on medium-low heat for 6-8 minutes, stirring continuously so it does not burn.\n4. Pour in the boiled pepper blend, curry powder, thyme, bay leaves, seasoning cubes, and salt. Fry until oil separates to the top.\n5. Pour in the rich chicken stock, bring to a boil, then taste and adjust salt.\n6. Add thoroughly washed parboiled rice. The liquid level should just cover the rice.\n7. Cover tightly with foil paper to trap steam, then place the pot lid over it. Cook on very low heat for 35 minutes.\n8. Once the rice is tender, increase the heat slightly for 3-5 minutes to impart that authentic, aromatic party smoke aroma. Fluff with a fork and serve with fried plantains (Dodo).`
+      instructions: `1. Blend the fresh tomatoes, tatashe, scotch bonnet peppers, and 1 onion until smooth. Pour into a pot and boil down until the moisture evaporates completely.\n2. In a deep heavy pot, heat vegetable oil and melt the butter. Add finely sliced onions and fry until translucent.\n3. Add tomato paste and fry on medium-low heat for 6-8 minutes, stirring continuously so it does not burn.\n4. Pour in the reduced pepper blend, curry powder, thyme, bay leaves, seasoning cubes, and salt. Fry until oil separates to the top.\n5. Pour in the rich stock, bring to a rapid boil, then taste and adjust seasoning.\n6. Add thoroughly washed parboiled rice. The liquid level should just cover the rice.\n7. Cover tightly with foil paper to trap steam, then place the pot lid over it. Cook on very low heat for 35 minutes.\n8. Once the rice is tender, increase the heat slightly for 3-5 minutes to impart that authentic, aromatic party smoke aroma. Fluff with a fork and serve with fried plantains (Dodo).`
     },
     {
       id: 'rec_egusi_soup',
       name: 'Authentic Egusi Soup with Bitterleaf & Assorted Meat',
       category: 'dinner',
       origin: 'nigerian',
-      region: 'Pan-Nigerian',
+      region: 'Yoruba / Igbo / Edo Heritage',
       prepTime: 20,
       cookTime: 40,
       servings: 5,
-      imageUrl: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '', // Uses exact neutral bespoke art to ensure it never shows an inaccurate generic dish
       ingredients: [
         '2 cups Ground melon seeds (Egusi)',
         '1 cup Red palm oil',
@@ -78,18 +220,18 @@ const App = (function () {
         '2 Seasoning cubes',
         '1 tsp Salt'
       ],
-      instructions: `1. Season the assorted meat and stockfish with onions, seasoning cubes, and salt. Boil until tender, reserving the rich broth.\n2. In a bowl, mix the ground egusi seeds with a small amount of warm water and diced onions to form a thick paste.\n3. Heat palm oil in a pot until warm. Scoop the egusi paste into balls and fry gently on medium heat until curdled and fragrant (about 8 minutes).\n4. Pour in the meat stock gradually, stirring gently so the egusi remains in delicious lump clusters.\n5. Add the cooked assorted meats, deboned smoked catfish, ground crayfish, blended scotch bonnets, and seasonings. Cover and simmer for 15 minutes.\n6. Stir in the washed bitterleaf (or fresh sliced ugwu). Simmer on low heat for 5 minutes.\n7. Serve hot alongside steaming Pounded Yam or Eba.`
+      instructions: `1. Season the assorted meat and stockfish with onions, seasoning cubes, and salt. Boil until tender, reserving the rich broth.\n2. In a bowl, mix ground egusi seeds with a small amount of warm water and diced onions to form a thick paste.\n3. Heat palm oil in a pot until warm. Scoop the egusi paste into balls and fry gently on medium heat until curdled and fragrant (about 8 minutes).\n4. Pour in the meat stock gradually, stirring gently so the egusi remains in delicious lump clusters.\n5. Add the cooked assorted meats, deboned smoked catfish, ground crayfish, blended scotch bonnets, and seasonings. Cover and simmer for 15 minutes.\n6. Stir in the washed bitterleaf (or fresh sliced ugwu). Simmer on low heat for 5 minutes.\n7. Serve hot alongside steaming Pounded Yam or Eba.`
     },
     {
       id: 'rec_pounded_yam',
       name: 'Silky Pounded Yam (Iyan)',
       category: 'dinner',
       origin: 'nigerian',
-      region: 'Yoruba / Igbo / Edo',
+      region: 'Yoruba / Igbo Traditional Swallow',
       prepTime: 15,
       cookTime: 30,
       servings: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1505253758473-96b3015f240a?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '1 Large tuber of White yam (Puna yam)',
         'Water for boiling'
@@ -101,11 +243,11 @@ const App = (function () {
       name: 'Efo Riro (Yoruba Rich Vegetable Soup)',
       category: 'lunch',
       origin: 'nigerian',
-      region: 'Yoruba',
+      region: 'Yoruba Heritage',
       prepTime: 20,
       cookTime: 30,
       servings: 5,
-      imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '2 Bunches fresh Spinach or Shoko / Tete leaves',
         '1 cup Red palm oil',
@@ -126,11 +268,11 @@ const App = (function () {
       name: 'Golden Crispy Akara (Bean Cakes)',
       category: 'breakfast',
       origin: 'nigerian',
-      region: 'Pan-Nigerian',
+      region: 'Pan-Nigerian Morning Favorite',
       prepTime: 20,
       cookTime: 15,
       servings: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1541518763669-27fef04b14ea?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '2 cups Peeled brown or black-eyed beans',
         '2 Scotch bonnet peppers (Rodo)',
@@ -146,11 +288,11 @@ const App = (function () {
       name: 'Steamed Moi Moi (Savory Bean Pudding)',
       category: 'breakfast',
       origin: 'nigerian',
-      region: 'Pan-Nigerian',
+      region: 'Pan-Nigerian Delicacy',
       prepTime: 30,
       cookTime: 45,
       servings: 6,
-      imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '2 cups Peeled brown beans',
         '3 Red bell peppers (Tatashe)',
@@ -175,7 +317,7 @@ const App = (function () {
       prepTime: 15,
       cookTime: 30,
       servings: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '1 Medium tuber White yam (cut into bite-sized cubes)',
         '1/2 cup Red palm oil',
@@ -187,18 +329,18 @@ const App = (function () {
         '2 Seasoning cubes',
         '1 tsp Salt'
       ],
-      instructions: `1. Peel and cut yam into bite-sized cubes; rinse clean.\n2. Place yam in a pot, add water just halfway up the yam, and bring to a boil with chopped onions, seasoning cubes, and salt for 15 minutes.\n3. Pour in palm oil, the blended pepper puree, ground crayfish, and flaked smoked fish.\n4. Reduce heat to medium and cook for another 10 minutes until the yam is very soft.\n5. Using a wooden spoon or potato masher, crush about half of the yam cubes to create a rich, creamy sauce while keeping the remaining cubes whole.\n6. Stir in the sliced green vegetables and simmer for 2 minutes before turning off the heat.`
+      instructions: `1. Peel and cut yam into bite-sized cubes; rinse clean.\n2. Place yam in a pot, add water just halfway up the yam, and bring to a boil with chopped onions, seasoning cubes, and salt for 15 minutes.\n3. Pour in palm oil, blended pepper puree, ground crayfish, and flaked smoked fish.\n4. Reduce heat to medium and cook for another 10 minutes until yam is very soft.\n5. Using a wooden spoon or potato masher, crush about half of the yam cubes to create a rich, creamy sauce while keeping the remaining cubes whole.\n6. Stir in sliced green vegetables and simmer for 2 minutes before turning off the heat.`
     },
     {
       id: 'rec_ewa_aganyin',
       name: 'Ewa Aganyin with Spicy Aganyin Sauce',
       category: 'breakfast',
       origin: 'nigerian',
-      region: 'Lagos / Benin Republic / Yoruba',
+      region: 'Lagos & Yoruba Heritage',
       prepTime: 20,
       cookTime: 55,
       servings: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1546069901-d19e07f43db4?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '2 cups Brown honey beans (Ewa Oloyin)',
         '1 cup Red palm oil',
@@ -219,7 +361,7 @@ const App = (function () {
       prepTime: 25,
       cookTime: 45,
       servings: 5,
-      imageUrl: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '3 cups Local Ofada rice (picked and washed)',
         '1 cup Red palm oil (bleached carefully)',
@@ -232,18 +374,18 @@ const App = (function () {
         '2 Onions',
         '1 tsp Salt'
       ],
-      instructions: `1. Pick small stones from Ofada rice, wash thoroughly, and boil with water and salt until tender; drain in a colander.\n2. Coarsely blend the green bell peppers, green scotch bonnets, and onions. Boil down until the water evaporates.\n3. Bleach palm oil in a tightly covered pot on low heat for 12 minutes until translucent (allow to cool slightly before opening to prevent smoke).\n4. Add sliced onions and rinsed locust beans (iru) to the oil and fry until fragrant.\n5. Add the green pepper paste and fry until oil floats to the top.\n6. Stir in assorted meat bites, crayfish, and whole boiled eggs. Simmer for 10 minutes.\n7. Serve over steaming Ofada rice wrapped in banana leaves.`
+      instructions: `1. Pick stones from Ofada rice, wash thoroughly, and boil with water and salt until tender; drain.\n2. Coarsely blend green bell peppers, green scotch bonnets, and onions. Boil down until the water evaporates.\n3. Bleach palm oil in a tightly covered pot on low heat for 12 minutes until translucent (allow to cool slightly before opening to prevent smoke).\n4. Add sliced onions and rinsed locust beans (iru) to the oil and fry until fragrant.\n5. Add the green pepper paste and fry until oil floats to the top.\n6. Stir in assorted meat bites, crayfish, and whole boiled eggs. Simmer for 10 minutes.\n7. Serve over steaming Ofada rice wrapped in banana leaves.`
     },
     {
       id: 'rec_okra_soup',
       name: 'Seafood Okra Soup (Ila Alasepo)',
       category: 'dinner',
       origin: 'nigerian',
-      region: 'Pan-Nigerian',
+      region: 'Pan-Nigerian Coastline',
       prepTime: 15,
       cookTime: 20,
       servings: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '30 Fresh Okra fingers (half finely chopped, half grated)',
         '250g Fresh jumbo prawns / shrimp',
@@ -256,7 +398,7 @@ const App = (function () {
         '2 Seasoning cubes',
         '1 tsp Salt'
       ],
-      instructions: `1. In a pot, bring 2 cups of water with seasoned fish and prawns to a gentle simmer for 5 minutes; gently remove the seafood and reserve the stock.\n2. To the bubbling broth, add palm oil, locust beans, chopped scotch bonnets, and ground crayfish.\n3. Add the chopped and grated okra. Whisk vigorously with a fork or cooking broom to bring out the viscosity.\n4. Cook on high heat for 3-4 minutes to keep the okra bright green and crisp.\n5. Return the cooked fish and prawns to the soup, fold in fresh spinach leaves, and turn off heat immediately.\n6. Serve with warm Semovita, Eba, or Pounded Yam.`
+      instructions: `1. In a pot, bring 2 cups of water with seasoned fish and prawns to a gentle simmer for 5 minutes; gently remove the seafood and reserve the stock.\n2. To the bubbling broth, add palm oil, locust beans, chopped scotch bonnets, and ground crayfish.\n3. Add chopped and grated okra. Whisk vigorously with a fork or cooking broom to bring out the viscosity.\n4. Cook on high heat for 3-4 minutes to keep the okra bright green and crisp.\n5. Return cooked fish and prawns to the soup, fold in fresh spinach leaves, and turn off heat immediately.\n6. Serve with warm Semovita, Eba, or Pounded Yam.`
     },
     {
       id: 'rec_ogbono_soup',
@@ -267,7 +409,7 @@ const App = (function () {
       prepTime: 15,
       cookTime: 25,
       servings: 5,
-      imageUrl: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '1 cup Ground Ogbono seeds (African mango seeds)',
         '1/2 cup Red palm oil',
@@ -279,18 +421,18 @@ const App = (function () {
         '2 Seasoning cubes',
         '1 tsp Salt'
       ],
-      instructions: `1. Boil assorted meats and stockfish until tender, reserving 3 cups of flavorful stock.\n2. Dissolve the finely ground ogbono in warm palm oil in a bowl until smooth and free of lumps.\n3. Pour the meat stock into a pot on medium heat. Pour in the dissolved ogbono mixture, stirring constantly in one direction.\n4. Watch as the soup begins to thicken and develop its signature stretch (draw). Simmer on low heat for 12 minutes.\n5. Add the cooked meats, deboned smoked catfish, crayfish, blended peppers, and seasoning cubes. Simmer for 8 minutes.\n6. Stir in chopped ugwu or bitterleaf, cook for 2 minutes, and serve hot with Eba or Fufu.`
+      instructions: `1. Boil assorted meats and stockfish until tender, reserving 3 cups of flavorful stock.\n2. Dissolve finely ground ogbono in warm palm oil in a bowl until smooth and free of lumps.\n3. Pour meat stock into a pot on medium heat. Pour in dissolved ogbono mixture, stirring constantly in one direction.\n4. Watch as the soup begins to thicken and develop its signature stretch. Simmer on low heat for 12 minutes.\n5. Add cooked meats, deboned smoked catfish, crayfish, blended peppers, and seasoning cubes. Simmer for 8 minutes.\n6. Stir in chopped ugwu or bitterleaf, cook for 2 minutes, and serve hot with Eba or Fufu.`
     },
     {
       id: 'rec_banga_soup',
       name: 'Delta Banga Soup (Oghwo Amiedi)',
       category: 'lunch',
       origin: 'nigerian',
-      region: 'Niger Delta (Urhobo / Itsekiri / Isoko)',
+      region: 'Niger Delta (Urhobo & Itsekiri)',
       prepTime: 20,
       cookTime: 35,
       servings: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '4 cups Fresh palm fruit concentrate (Banga extract)',
         '500g Assorted meat & fresh catfish',
@@ -301,18 +443,18 @@ const App = (function () {
         '2 Scotch bonnet peppers',
         '1 tsp Salt'
       ],
-      instructions: `1. In a traditional clay pot or heavy saucepan, pour palm fruit concentrate with 1 cup of water and bring to a gentle boil.\n2. Add the oburunbebe stick, banga spice blend, blended scotch bonnets, and ground crayfish.\n3. Add precooked meats and fresh catfish. Cook on medium heat for 20 minutes until the soup thickens and palm oil pools on top.\n4. Crush dried beletete leaves between your palms into the pot and stir gently.\n5. Simmer on low heat for 5 minutes. Serve hot with yellow cassava Starch (Usi) or Pounded Yam.`
+      instructions: `1. In a traditional clay pot or heavy saucepan, pour palm fruit concentrate with 1 cup of water and bring to a gentle boil.\n2. Add oburunbebe stick, banga spice blend, blended scotch bonnets, and ground crayfish.\n3. Add precooked meats and fresh catfish. Cook on medium heat for 20 minutes until the soup thickens and palm oil pools on top.\n4. Crush dried beletete leaves between your palms into the pot and stir gently.\n5. Simmer on low heat for 5 minutes. Serve hot with yellow cassava Starch (Usi) or Pounded Yam.`
     },
     {
       id: 'rec_afang_soup',
       name: 'Calabar Afang Soup',
       category: 'dinner',
       origin: 'nigerian',
-      region: 'Efik / Ibibio (Cross River & Akwa Ibom)',
+      region: 'Efik / Ibibio (Cross River)',
       prepTime: 25,
       cookTime: 30,
       servings: 5,
-      imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '2 cups Ground Afang (Okazi) leaves',
         '4 cups Fresh Waterleaf (shredded)',
@@ -324,18 +466,18 @@ const App = (function () {
         '2 Seasoning cubes',
         '1 tsp Salt'
       ],
-      instructions: `1. Boil beef, kpomo, snails, and stockfish with seasoning cubes until very tender with little concentrated broth remaining.\n2. Add ground crayfish, blended scotch bonnets, and palm oil to the pot; simmer for 5 minutes.\n3. Add the shredded waterleaf. Cook for 3 minutes (waterleaf releases lots of moisture).\n4. Add the finely pounded afang leaves and stir thoroughly to combine.\n5. Simmer on low heat for 4 minutes until the leaves soften. Serve with Semo, Garri, or Pounded Yam.`
+      instructions: `1. Boil beef, kpomo, snails, and stockfish with seasoning cubes until very tender with little concentrated broth remaining.\n2. Add ground crayfish, blended scotch bonnets, and palm oil to the pot; simmer for 5 minutes.\n3. Add shredded waterleaf. Cook for 3 minutes (waterleaf releases moisture).\n4. Add finely pounded afang leaves and stir thoroughly to combine.\n5. Simmer on low heat for 4 minutes until the leaves soften. Serve with Semo, Garri, or Pounded Yam.`
     },
     {
       id: 'rec_edikang_ikong',
       name: 'Authentic Edikang Ikong Soup',
       category: 'dinner',
       origin: 'nigerian',
-      region: 'Efik / Ibibio',
+      region: 'Efik / Ibibio Cuisine',
       prepTime: 25,
       cookTime: 30,
       servings: 5,
-      imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '4 cups Ugwu leaves (fluted pumpkin, shredded)',
         '2 cups Waterleaf (shredded)',
@@ -354,11 +496,11 @@ const App = (function () {
       name: 'Amala with Ewedu & Gbegiri (Abula)',
       category: 'lunch',
       origin: 'nigerian',
-      region: 'Yoruba (Oyo / Ibadan heritage)',
+      region: 'Yoruba (Oyo & Ibadan Heritage)',
       prepTime: 20,
       cookTime: 35,
       servings: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '2 cups Yam flour (Elubo)',
         '2 Bunches fresh Ewedu leaves',
@@ -376,11 +518,11 @@ const App = (function () {
       name: 'Authentic Nigerian Beef Suya',
       category: 'snack',
       origin: 'nigerian',
-      region: 'Hausa / Northern Nigeria',
+      region: 'Northern Nigerian Heritage',
       prepTime: 25,
       cookTime: 18,
       servings: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
       ingredients: [
         '500g Beef flank or sirloin (thinly sliced across grain)',
         '1/2 cup Yaji spice blend (roasted peanut powder, ginger, garlic, chili, cloves)',
@@ -397,11 +539,11 @@ const App = (function () {
       name: 'Fluffy Golden Puff Puff',
       category: 'snack',
       origin: 'nigerian',
-      region: 'Pan-Nigerian Street Food',
+      region: 'Pan-Nigerian Street Delicacy',
       prepTime: 50,
       cookTime: 15,
       servings: 6,
-      imageUrl: 'https://images.unsplash.com/photo-1541518763669-27fef04b14ea?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '3 cups All-purpose flour',
         '1/2 cup Granulated sugar',
@@ -411,7 +553,7 @@ const App = (function () {
         '1/2 tsp Salt',
         '4 cups Vegetable oil for deep frying'
       ],
-      instructions: `1. In a bowl, dissolve active yeast and 1 tbsp sugar in warm water; let sit for 5 minutes until foamy.\n2. In a larger bowl, mix flour, remaining sugar, nutmeg, and salt.\n3. Pour in the yeast liquid and mix with your hands or a spoon into a smooth, stretchy, thick batter.\n4. Cover tightly with cling wrap and a warm towel; proof in a warm place for 45 minutes until doubled in volume.\n5. Heat vegetable oil on medium heat in a deep pot.\n6. Grab handfuls of batter and squeeze through your thumb and forefinger to drop round spheres into the hot oil.\n7. Fry until evenly golden brown on all sides, turning occasionally. Drain on paper towels and enjoy warm!`
+      instructions: `1. In a bowl, dissolve active yeast and 1 tbsp sugar in warm water; let sit for 5 minutes until foamy.\n2. In a larger bowl, mix flour, remaining sugar, nutmeg, and salt.\n3. Pour in yeast liquid and mix with your hands or a spoon into a smooth, stretchy, thick batter.\n4. Cover tightly with cling wrap and a warm towel; proof in a warm place for 45 minutes until doubled in volume.\n5. Heat vegetable oil on medium heat in a deep pot.\n6. Grab handfuls of batter and squeeze through your thumb and forefinger to drop round spheres into the hot oil.\n7. Fry until evenly golden brown on all sides, turning occasionally. Drain on paper towels and enjoy warm!`
     },
     {
       id: 'rec_meat_pie',
@@ -422,7 +564,7 @@ const App = (function () {
       prepTime: 35,
       cookTime: 35,
       servings: 6,
-      imageUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '3 cups All-purpose flour',
         '200g Cold unsalted butter (cubed)',
@@ -443,11 +585,11 @@ const App = (function () {
       name: 'Nigerian Fried Rice with Liver & Veggies',
       category: 'lunch',
       origin: 'nigerian',
-      region: 'Pan-Nigerian Celebration Dish',
+      region: 'Pan-Nigerian Celebration Classic',
       prepTime: 25,
       cookTime: 30,
       servings: 5,
-      imageUrl: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '3 cups Parboiled long grain rice',
         '3 cups Rich chicken/turkey stock',
@@ -466,11 +608,11 @@ const App = (function () {
       name: 'Traditional Ogi (Akamu / Pap) with Milk & Sugar',
       category: 'breakfast',
       origin: 'nigerian',
-      region: 'Pan-Nigerian Morning Classic',
+      region: 'Pan-Nigerian Morning Comfort',
       prepTime: 5,
       cookTime: 5,
       servings: 2,
-      imageUrl: 'https://images.unsplash.com/photo-1541518763669-27fef04b14ea?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '',
       ingredients: [
         '3 tbsp Fermented corn paste (Yellow or white Ogi)',
         '2 cups Freshly boiling water',
@@ -480,34 +622,11 @@ const App = (function () {
       instructions: `1. In a clean deep bowl, mix the cold ogi paste with 2 tablespoons of cold water until smooth and lump-free.\n2. Pour freshly boiling water continuously from a slight height into the center of the bowl while stirring steadily in one direction.\n3. The mixture will rapidly turn translucent and thicken into a soothing porridge.\n4. Swirl in creamy evaporated milk and sugar or honey. Pair with hot Akara or Moi Moi.`
     },
     {
-      id: 'rec_intl_creamy_pasta',
-      name: 'Creamy Garlic Tuscan Chicken & Pasta',
-      category: 'dinner',
-      origin: 'international',
-      region: 'Italian-American',
-      prepTime: 15,
-      cookTime: 20,
-      servings: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=800&q=80',
-      ingredients: [
-        '300g Penne or Fettuccine pasta',
-        '400g Chicken breast (sliced)',
-        '1 cup Heavy cooking cream',
-        '4 cloves Garlic (minced)',
-        '1 cup Fresh baby spinach',
-        '1/2 cup Sun-dried or cherry tomatoes',
-        '1/2 cup Grated Parmesan cheese',
-        '2 tbsp Olive oil',
-        '1 tsp Salt & black pepper'
-      ],
-      instructions: `1. Boil pasta in salted water until al dente; reserve 1/2 cup pasta water and drain.\n2. Season chicken with salt, pepper, and herbs; sear in olive oil in a skillet until golden; set aside.\n3. In the same skillet, saute minced garlic and tomatoes for 2 minutes. Pour in heavy cream, bring to a gentle simmer, and stir in parmesan.\n4. Fold in fresh baby spinach until wilted. Toss in the cooked pasta and sliced chicken.\n5. Serve warm topped with cracked black pepper.`
-    },
-    {
       id: 'rec_intl_pancakes',
       name: 'Fluffy Golden Pancakes with Honey & Fruit',
       category: 'breakfast',
       origin: 'international',
-      region: 'American Classic',
+      region: 'Continental Morning Classic',
       prepTime: 10,
       cookTime: 15,
       servings: 4,
@@ -526,7 +645,7 @@ const App = (function () {
     }
   ];
 
-  // Realistic starter inventory items so "Cook with what I have" smart matching works right away!
+  // Starter Kitchen Inventory
   const STARTER_INVENTORY = [
     { id: 'inv_1', name: 'Long grain parboiled rice', quantity: 5, unit: 'kg', expiryDate: getFutureDate(180), threshold: 2 },
     { id: 'inv_2', name: 'Red palm oil', quantity: 2, unit: 'liters', expiryDate: getFutureDate(90), threshold: 1 },
@@ -538,11 +657,11 @@ const App = (function () {
     { id: 'inv_8', name: 'Red bell peppers (Tatashe)', quantity: 4, unit: 'pieces', expiryDate: getFutureDate(4), threshold: 2 },
     { id: 'inv_9', name: 'Seasoning cubes', quantity: 25, unit: 'pieces', expiryDate: getFutureDate(120), threshold: 5 },
     { id: 'inv_10', name: 'Ground crayfish', quantity: 1, unit: 'cups', expiryDate: getFutureDate(60), threshold: 1 },
-    { id: 'inv_11', name: 'Smoked catfish', quantity: 2, unit: 'pieces', expiryDate: getFutureDate(2), threshold: 1 }, // Soon to expire example
+    { id: 'inv_11', name: 'Smoked catfish', quantity: 2, unit: 'pieces', expiryDate: getFutureDate(2), threshold: 1 },
     { id: 'inv_12', name: 'Vegetable oil', quantity: 1.5, unit: 'liters', expiryDate: getFutureDate(90), threshold: 1 }
   ];
 
-  // Sample planned meals so the weekly planner looks lively immediately
+  // Starter Planner
   const STARTER_PLANNER = {
     'monday_breakfast': { recipeId: 'rec_akara_crispy', customName: '' },
     'monday_lunch': { recipeId: 'rec_jollof_party', customName: '' },
@@ -560,7 +679,7 @@ const App = (function () {
     'sunday_lunch': { recipeId: 'rec_jollof_party', customName: '' }
   };
 
-  // Sample starter shopping items
+  // Starter Shopping
   const STARTER_SHOPPING = [
     { id: 'shop_1', name: 'Fresh Ugwu leaves', quantity: 2, unit: 'bunch', purchased: false, fromRecipe: 'Egusi Soup' },
     { id: 'shop_2', name: 'Stockfish head', quantity: 1, unit: 'pieces', purchased: false, fromRecipe: 'Egusi Soup' },
@@ -568,13 +687,16 @@ const App = (function () {
   ];
 
   // ----------------------------------------------------------------------------
-  // 3. APPLICATION STATE
+  // 5. APPLICATION STATE
   // ----------------------------------------------------------------------------
   const state = {
     recipes: [],
     inventory: [],
     planner: {},
     shopping: [],
+    userName: 'Sarah',
+    greetingPref: 'all',
+    currentGreetingIndex: 0,
     currentView: 'dashboard',
     activeRecipeCategory: 'all',
     recipeSearchQuery: '',
@@ -587,7 +709,7 @@ const App = (function () {
   };
 
   // ----------------------------------------------------------------------------
-  // 4. HELPER UTILITIES
+  // 6. HELPER UTILITIES
   // ----------------------------------------------------------------------------
   function generateId(prefix = 'item') {
     return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
@@ -622,13 +744,21 @@ const App = (function () {
   }
 
   // ----------------------------------------------------------------------------
-  // 5. LOCAL STORAGE MANAGEMENT
+  // 7. LOCAL STORAGE MANAGEMENT
   // ----------------------------------------------------------------------------
   function loadData() {
     try {
       const isInit = localStorage.getItem(STORAGE_KEYS.INITIALIZED);
+
+      // Load user profile name & greeting pref
+      const savedName = localStorage.getItem(STORAGE_KEYS.USER_NAME);
+      state.userName = savedName ? savedName : 'Sarah';
+
+      const savedGreetingPref = localStorage.getItem(STORAGE_KEYS.GREETING_PREF);
+      state.greetingPref = savedGreetingPref || 'all';
+
       if (!isInit) {
-        // First time opening app: seed with starter Nigerian collection
+        // Seed first time
         state.recipes = STARTER_RECIPES;
         state.inventory = STARTER_INVENTORY;
         state.planner = STARTER_PLANNER;
@@ -658,6 +788,7 @@ const App = (function () {
       state.inventory = STARTER_INVENTORY;
       state.planner = STARTER_PLANNER;
       state.shopping = STARTER_SHOPPING;
+      state.userName = 'Sarah';
     }
   }
 
@@ -693,8 +824,18 @@ const App = (function () {
     }
   }
 
+  function saveUserProfile(name, greetingPref) {
+    state.userName = safeString(name) || 'Sarah';
+    state.greetingPref = greetingPref || 'all';
+    localStorage.setItem(STORAGE_KEYS.USER_NAME, state.userName);
+    localStorage.setItem(STORAGE_KEYS.GREETING_PREF, state.greetingPref);
+    updateUserInterfaceIdentity();
+    renderDashboardGreeting();
+    showToast(`Welcome, ${state.userName}! Your preferences have been saved.`, 'success');
+  }
+
   // ----------------------------------------------------------------------------
-  // 6. TOAST NOTIFICATIONS & MODALS
+  // 8. TOAST NOTIFICATIONS & MODALS
   // ----------------------------------------------------------------------------
   function showToast(message, type = 'success', duration = 3200) {
     const container = document.getElementById('toastContainer');
@@ -712,7 +853,7 @@ const App = (function () {
 
     setTimeout(() => {
       toast.style.opacity = '0';
-      toast.style.transform = 'translateY(10px)';
+      toast.style.transform = 'translateY(12px)';
       toast.style.transition = 'all 0.3s ease';
       setTimeout(() => toast.remove(), 300);
     }, duration);
@@ -770,8 +911,111 @@ const App = (function () {
     if (modal) modal.classList.add('open');
   }
 
+  // User Profile Modal
+  function openProfileModal() {
+    const nameInput = document.getElementById('userNameInput');
+    const prefSelect = document.getElementById('userGreetingPref');
+    if (nameInput) nameInput.value = state.userName || '';
+    if (prefSelect) prefSelect.value = state.greetingPref || 'all';
+    openModal('userProfileModal');
+  }
+
+  function handleProfileSubmit(e) {
+    e.preventDefault();
+    const nameInput = document.getElementById('userNameInput');
+    const prefSelect = document.getElementById('userGreetingPref');
+    const name = safeString(nameInput.value);
+    const pref = prefSelect.value;
+
+    if (!name) {
+      document.getElementById('errUserName').textContent = 'Please enter your preferred name';
+      return;
+    }
+    document.getElementById('errUserName').textContent = '';
+
+    saveUserProfile(name, pref);
+    closeModal('userProfileModal');
+  }
+
+  function updateUserInterfaceIdentity() {
+    const initial = (state.userName || 'S').charAt(0).toUpperCase();
+    
+    // Topbar Profile Chip
+    const topbarName = document.getElementById('topbarUserName');
+    const topbarAvatar = document.getElementById('topbarAvatarLetter');
+    if (topbarName) topbarName.textContent = state.userName;
+    if (topbarAvatar) topbarAvatar.textContent = initial;
+
+    // Sidebar Profile Card
+    const sidebarName = document.getElementById('sidebarProfileName');
+    const sidebarAvatar = document.getElementById('sidebarAvatarLetter');
+    if (sidebarName) sidebarName.textContent = state.userName;
+    if (sidebarAvatar) sidebarAvatar.textContent = initial;
+  }
+
   // ----------------------------------------------------------------------------
-  // 7. NAVIGATION & VIEW SWITCHING
+  // 9. NIGERIAN GREETINGS ENGINE
+  // Multi-lingual, culturally celebratory, time-aware, paired with user name
+  // ----------------------------------------------------------------------------
+  function getCurrentTimeOfDay() {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'morning';
+    if (hour < 17) return 'afternoon';
+    return 'evening';
+  }
+
+  function getEligibleGreetings() {
+    const timeOfDay = getCurrentTimeOfDay();
+    const pref = state.greetingPref || 'all';
+
+    return NIGERIAN_GREETINGS.filter(g => {
+      // Dialect filter
+      if (pref !== 'all') {
+        const langLower = g.lang.toLowerCase();
+        if (!langLower.includes(pref)) return false;
+      }
+      // Time of day filter
+      return g.timeOfDay === 'any' || g.timeOfDay === timeOfDay;
+    });
+  }
+
+  function renderDashboardGreeting() {
+    const greetingEl = document.getElementById('dashboardGreeting');
+    const langTagEl = document.getElementById('greetingLangName');
+    const subGreetingEl = document.getElementById('dashboardSubGreeting');
+    if (!greetingEl) return;
+
+    const list = getEligibleGreetings();
+    const pool = list.length > 0 ? list : NIGERIAN_GREETINGS;
+    const selected = pool[state.currentGreetingIndex % pool.length];
+
+    const userName = state.userName || 'Chef';
+
+    // Format personalized greeting: e.g. "Ẹ káàbọ̀, Sarah!" or "How far, Sarah? Wetin we dey cook today?"
+    let greetingText = '';
+    if (selected.text.includes('?')) {
+      greetingText = `${selected.text.replace('?', '')}, ${userName}?`;
+    } else if (selected.text.includes('!')) {
+      greetingText = `${selected.text.replace('!', '')}, ${userName}!`;
+    } else {
+      greetingText = `${selected.text}, ${userName}!`;
+    }
+
+    greetingEl.textContent = greetingText;
+    if (langTagEl) langTagEl.textContent = `${selected.lang} Heritage`;
+    if (subGreetingEl && selected.subtitle) {
+      subGreetingEl.textContent = selected.subtitle;
+    }
+  }
+
+  function cycleGreeting() {
+    state.currentGreetingIndex = (state.currentGreetingIndex + 1);
+    renderDashboardGreeting();
+    showToast('Switched to another Nigerian cultural greeting!', 'accent', 1800);
+  }
+
+  // ----------------------------------------------------------------------------
+  // 10. NAVIGATION & VIEW SWITCHING
   // ----------------------------------------------------------------------------
   function navigate(viewName) {
     const validViews = ['dashboard', 'recipes', 'suggestions', 'planner', 'inventory', 'shopping'];
@@ -816,37 +1060,37 @@ const App = (function () {
     const viewDetails = {
       dashboard: {
         title: 'Dashboard',
-        subtitle: 'Overview of your kitchen and weekly meal plans',
+        subtitle: 'Curated culinary planning and inventory overview',
         btnText: 'Add Recipe',
         action: () => openAddRecipeModal()
       },
       recipes: {
-        title: 'Recipes Collection',
-        subtitle: 'Authentic Nigerian dishes and culinary creations',
+        title: 'Recipe Library',
+        subtitle: 'Authentic Nigerian heritage dishes and culinary creations',
         btnText: 'Add Recipe',
         action: () => openAddRecipeModal()
       },
       suggestions: {
         title: 'What Should I Eat Today?',
-        subtitle: 'Get intelligent meal ideas based on your kitchen inventory',
+        subtitle: 'Smart meal recommendations based on your kitchen inventory',
         btnText: 'Surprise Me!',
         action: () => generateRandomSuggestion()
       },
       planner: {
         title: 'Weekly Meal Planner',
-        subtitle: 'Organize your breakfast, lunch, dinner and snacks',
+        subtitle: 'Organize your breakfast, lunch, dinner and snacks across the week',
         btnText: 'Assign Meal',
         action: () => openAssignPlannerModal()
       },
       inventory: {
         title: 'Kitchen Inventory',
-        subtitle: 'Track in-stock ingredients, quantities and expiry alerts',
+        subtitle: 'Track pantry ingredients, quantities and expiry alerts',
         btnText: 'Add Ingredient',
         action: () => openAddInventoryModal()
       },
       shopping: {
         title: 'Shopping List',
-        subtitle: 'List of ingredients to buy for your planned recipes',
+        subtitle: 'Ingredients to purchase for your planned culinary creations',
         btnText: 'Add Item',
         action: () => openAddShoppingModal()
       }
@@ -860,7 +1104,6 @@ const App = (function () {
       globalAddBtn.onclick = details.action;
     }
 
-    // Refresh contents of target view
     refreshCurrentView();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -875,7 +1118,6 @@ const App = (function () {
         renderRecipes();
         break;
       case 'suggestions':
-        // Keep current or clear suggestion
         break;
       case 'planner':
         renderPlanner();
@@ -890,7 +1132,6 @@ const App = (function () {
   }
 
   function updateBadgesAndCounters() {
-    // Nav badges
     const navRecipeCount = document.getElementById('nav-recipe-count');
     const navPlannerCount = document.getElementById('nav-planner-count');
     const navInvCount = document.getElementById('nav-inventory-count');
@@ -906,7 +1147,6 @@ const App = (function () {
     if (navInvCount) navInvCount.textContent = invCount;
     if (navShopCount) navShopCount.textContent = pendingShopCount;
 
-    // Top Header / Dashboard stats
     const dashRecipes = document.getElementById('dashTotalRecipes');
     const dashPlanned = document.getElementById('dashPlannedMeals');
     const dashInv = document.getElementById('dashInventoryCount');
@@ -919,35 +1159,23 @@ const App = (function () {
   }
 
   // ----------------------------------------------------------------------------
-  // 8. DASHBOARD MODULE
+  // 11. DASHBOARD MODULE
   // ----------------------------------------------------------------------------
   function renderDashboard() {
-    // 1. Dynamic Greeting & Date
-    const greetingEl = document.getElementById('dashboardGreeting');
+    // 1. Personalised Nigerian Greeting
+    renderDashboardGreeting();
+    updateUserInterfaceIdentity();
+
+    // 2. Date in Topbar
     const topbarDateEl = document.getElementById('topbarDate');
     const now = new Date();
-    const hour = now.getHours();
-
-    let greeting = 'Good day, Chef!';
-    if (hour < 12) greeting = 'Good morning, Chef!';
-    else if (hour < 17) greeting = 'Good afternoon, Chef!';
-    else greeting = 'Good evening, Chef!';
-
-    if (greetingEl) greetingEl.textContent = greeting;
-
     const dateOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
     if (topbarDateEl) topbarDateEl.textContent = now.toLocaleDateString('en-GB', dateOptions);
 
-    // 2. Inventory Alert Highlights
+    // 3. Alerts, Today's Meals, Spotlight, Week Glance
     renderDashboardAlerts();
-
-    // 3. Today's Planned Meals
     renderDashboardTodayMeals();
-
-    // 4. Daily Nigerian Meal Spotlight
     renderDashboardSpotlight();
-
-    // 5. Week at a Glance mini grid
     renderDashboardWeekGlance();
   }
 
@@ -984,21 +1212,21 @@ const App = (function () {
       if (expiredCount > 0 && soonCount > 0) {
         msg = `<strong>${expiredCount} expired</strong> and <strong>${soonCount} soon-to-expire</strong> ingredient(s) in your kitchen!`;
       } else if (expiredCount > 0) {
-        msg = `<strong>${expiredCount} ingredient(s)</strong> have expired in your kitchen!`;
+        msg = `<strong>${expiredCount} ingredient(s)</strong> have expired in your pantry!`;
       } else {
-        msg = `<strong>${soonCount} ingredient(s)</strong> are expiring in the next 3 days!`;
+        msg = `<strong>${soonCount} ingredient(s)</strong> are approaching expiry within 3 days!`;
       }
 
       banner.innerHTML = `
         <div class="alert-banner-content">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--danger);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:#be123c;">
             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
             <line x1="12" y1="9" x2="12" y2="13"></line>
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
           </svg>
           <span>${msg}</span>
         </div>
-        <button class="btn btn-outline btn-xs" onclick="App.navigate('inventory')">Check Inventory</button>
+        <button class="btn btn-outline btn-xs" onclick="App.navigate('inventory')">Check Pantry</button>
       `;
       container.appendChild(banner);
     }
@@ -1008,7 +1236,7 @@ const App = (function () {
       banner.className = 'alert-banner';
       banner.innerHTML = `
         <div class="alert-banner-content">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--gold);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--gold-600);">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="12"></line>
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -1068,7 +1296,7 @@ const App = (function () {
         </div>
         <div class="slot-right">
           ${!isEmpty && recipeObj ? `
-            <button class="btn btn-outline btn-xs" onclick="App.openRecipeDetailModal('${recipeObj.id}')">View</button>
+            <button class="btn btn-outline btn-xs" onclick="App.openRecipeDetailModal('${recipeObj.id}')">View Recipe</button>
           ` : `
             <button class="btn btn-primary btn-xs" onclick="App.openAssignPlannerModal('${today}', '${slot}')">+ Plan</button>
           `}
@@ -1084,11 +1312,10 @@ const App = (function () {
 
     const nigerianRecipes = state.recipes.filter(r => r.origin === 'nigerian');
     if (nigerianRecipes.length === 0) {
-      container.innerHTML = `<p style="padding:1rem;color:var(--text-muted);">No Nigerian recipes found.</p>`;
+      container.innerHTML = `<p style="padding:1.5rem;color:var(--charcoal-500);">No Nigerian recipes currently in library.</p>`;
       return;
     }
 
-    // Pick stable recipe for today unless user shuffled
     let recipe;
     if (state.currentSpotlightRecipeId) {
       recipe = nigerianRecipes.find(r => r.id === state.currentSpotlightRecipeId);
@@ -1099,9 +1326,11 @@ const App = (function () {
       state.currentSpotlightRecipeId = recipe.id;
     }
 
+    const imgSrc = recipe.imageUrl ? recipe.imageUrl : generateBespokeMealCard(recipe);
+
     container.innerHTML = `
       <div class="spotlight-img-wrap" onclick="App.openRecipeDetailModal('${recipe.id}')" style="cursor:pointer;">
-        <img src="${recipe.imageUrl || getFallbackFoodImage(recipe.category)}" alt="${recipe.name}" onerror="this.src='${getFallbackFoodImage(recipe.category)}'">
+        <img src="${imgSrc}" alt="${recipe.name}" onerror="App.handleImageError(this, '${recipe.name}', '${recipe.category}', '${recipe.origin}')">
         <span class="spotlight-pill">🇳🇬 ${recipe.region || 'Heritage'}</span>
       </div>
       <div class="spotlight-body">
@@ -1113,7 +1342,7 @@ const App = (function () {
         </div>
         <div class="spotlight-actions">
           <button class="btn btn-primary btn-sm" onclick="App.openRecipeDetailModal('${recipe.id}')">Cook This Dish</button>
-          <button class="btn btn-outline btn-sm" onclick="App.openAssignPlannerModal(null, null, '${recipe.id}')">Add to Meal Plan</button>
+          <button class="btn btn-gold btn-sm" onclick="App.openAssignPlannerModal(null, null, '${recipe.id}')">Add to Meal Plan</button>
         </div>
       </div>
     `;
@@ -1130,7 +1359,7 @@ const App = (function () {
 
     state.currentSpotlightRecipeId = nextRecipe.id;
     renderDashboardSpotlight();
-    showToast('New meal inspiration chosen!', 'accent', 2000);
+    showToast('New authentic dish spotlighted!', 'accent', 2000);
   }
 
   function renderDashboardWeekGlance() {
@@ -1163,7 +1392,7 @@ const App = (function () {
   }
 
   // ----------------------------------------------------------------------------
-  // 9. RECIPES MODULE (Manage Recipes)
+  // 12. RECIPES MODULE (Accurate Imagery & Elegant Cards)
   // ----------------------------------------------------------------------------
   function renderRecipes() {
     const grid = document.getElementById('recipesGrid');
@@ -1174,7 +1403,7 @@ const App = (function () {
 
     if (totalHeader) totalHeader.textContent = state.recipes.length;
 
-    // Update Category Pills counts
+    // Category Pills counts
     const counts = {
       all: state.recipes.length,
       breakfast: state.recipes.filter(r => r.category === 'breakfast').length,
@@ -1191,14 +1420,12 @@ const App = (function () {
 
     // Filter recipes by category & search query
     let filtered = state.recipes.filter(recipe => {
-      // Category filter
       if (state.activeRecipeCategory === 'nigerian') {
         if (recipe.origin !== 'nigerian') return false;
       } else if (state.activeRecipeCategory !== 'all') {
         if (recipe.category !== state.activeRecipeCategory) return false;
       }
 
-      // Search filter (name or ingredient)
       if (state.recipeSearchQuery) {
         const query = state.recipeSearchQuery.toLowerCase();
         const matchesName = recipe.name.toLowerCase().includes(query);
@@ -1226,15 +1453,14 @@ const App = (function () {
     });
   }
 
-  function getFallbackFoodImage(category) {
-    // High quality themed fallbacks
-    const images = {
-      breakfast: 'https://images.unsplash.com/photo-1541518763669-27fef04b14ea?auto=format&fit=crop&w=800&q=80',
-      lunch: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80',
-      dinner: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80',
-      snack: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80'
-    };
-    return images[category] || images.lunch;
+  function handleImageError(imgEl, recipeName, category, origin) {
+    if (!imgEl) return;
+    imgEl.onerror = null; // Prevent recursion
+    imgEl.src = generateBespokeMealCard({
+      name: recipeName,
+      category: category,
+      origin: origin
+    });
   }
 
   function createRecipeCard(recipe) {
@@ -1245,12 +1471,13 @@ const App = (function () {
     const totalTime = (recipe.prepTime || 0) + (recipe.cookTime || 0);
     const ingredientsSnippet = recipe.ingredients.slice(0, 3).join(', ') + (recipe.ingredients.length > 3 ? ` +${recipe.ingredients.length - 3} more` : '');
     const isNigerian = recipe.origin === 'nigerian';
+    const imgSrc = recipe.imageUrl ? recipe.imageUrl : generateBespokeMealCard(recipe);
 
     card.innerHTML = `
       <div class="recipe-card-img-wrap" onclick="App.openRecipeDetailModal('${recipe.id}')">
-        <img src="${recipe.imageUrl || getFallbackFoodImage(recipe.category)}" alt="${recipe.name}" loading="lazy" onerror="this.src='${getFallbackFoodImage(recipe.category)}'">
+        <img src="${imgSrc}" alt="${recipe.name}" loading="lazy" onerror="App.handleImageError(this, '${recipe.name}', '${recipe.category}', '${recipe.origin}')">
         <div class="recipe-top-tags">
-          <span class="recipe-cuisine-tag ${isNigerian ? '' : 'tag-intl'}">${isNigerian ? '🇳🇬 Nigerian' : '🌍 International'}</span>
+          <span class="recipe-cuisine-tag ${isNigerian ? '' : 'tag-intl'}">${isNigerian ? '🇳🇬 ' + (recipe.region || 'Nigerian Heritage') : '🌍 International'}</span>
           <span class="recipe-category-tag">${recipe.category}</span>
         </div>
       </div>
@@ -1307,7 +1534,6 @@ const App = (function () {
     return card;
   }
 
-  // Recipe Modal: Open for Add
   function openAddRecipeModal() {
     const form = document.getElementById('recipeForm');
     if (!form) return;
@@ -1318,7 +1544,6 @@ const App = (function () {
     openModal('recipeFormModal');
   }
 
-  // Recipe Modal: Open for Edit
   function openEditRecipeModal(recipeId) {
     const recipe = state.recipes.find(r => r.id === recipeId);
     if (!recipe) return;
@@ -1356,7 +1581,6 @@ const App = (function () {
     const instructions = safeString(document.getElementById('recipeFormInstructions').value);
     const imageUrl = safeString(document.getElementById('recipeFormImageUrl').value);
 
-    // Validation
     let hasError = false;
     if (!name) {
       setFieldError('errRecipeName', 'Recipe name is required');
@@ -1375,7 +1599,6 @@ const App = (function () {
       hasError = true;
     }
 
-    // Parse ingredients (split by new line or comma)
     const ingredients = ingredientsRaw
       .split(/\r?\n|,/)
       .map(i => i.trim())
@@ -1393,7 +1616,6 @@ const App = (function () {
     if (hasError) return;
 
     if (id) {
-      // Editing existing recipe
       const idx = state.recipes.findIndex(r => r.id === id);
       if (idx !== -1) {
         state.recipes[idx] = {
@@ -1412,13 +1634,12 @@ const App = (function () {
         showToast(`"${name}" updated successfully!`, 'success');
       }
     } else {
-      // Creating new recipe
       const newRecipe = {
         id: generateId('rec'),
         name,
         category,
         origin,
-        region: origin === 'nigerian' ? 'Custom Nigerian' : 'International',
+        region: origin === 'nigerian' ? 'Custom Nigerian' : 'International Alternative',
         prepTime,
         cookTime,
         servings,
@@ -1429,7 +1650,7 @@ const App = (function () {
       };
       state.recipes.unshift(newRecipe);
       saveRecipes();
-      showToast(`"${name}" added to recipes!`, 'success');
+      showToast(`"${name}" added to recipe library!`, 'success');
     }
 
     closeModal('recipeFormModal');
@@ -1447,7 +1668,6 @@ const App = (function () {
         state.recipes = state.recipes.filter(r => r.id !== recipeId);
         saveRecipes();
 
-        // Also clean up any planner slots referencing this recipe
         for (const [slotKey, planItem] of Object.entries(state.planner)) {
           if (planItem && planItem.recipeId === recipeId) {
             delete state.planner[slotKey];
@@ -1462,24 +1682,22 @@ const App = (function () {
     );
   }
 
-  // Recipe Detail Modal View
   function openRecipeDetailModal(recipeId) {
     const recipe = state.recipes.find(r => r.id === recipeId);
     if (!recipe) return;
 
     document.getElementById('detailModalTitle').textContent = recipe.name;
     document.getElementById('detailModalCategoryBadge').textContent = recipe.category;
-    document.getElementById('detailModalCuisineBadge').textContent = recipe.origin === 'nigerian' ? `🇳🇬 ${recipe.region || 'Nigerian'}` : '🌍 International';
+    document.getElementById('detailModalCuisineBadge').textContent = recipe.origin === 'nigerian' ? `🇳🇬 ${recipe.region || 'Nigerian Heritage'}` : '🌍 International';
     document.getElementById('detailModalPrep').textContent = `${recipe.prepTime} mins`;
     document.getElementById('detailModalCook').textContent = `${recipe.cookTime} mins`;
     document.getElementById('detailModalTotalTime').textContent = `${recipe.prepTime + recipe.cookTime} mins`;
     document.getElementById('detailModalServings').textContent = `${recipe.servings} people`;
     
-    const imgEl = document.getElementById('detailModalImg');
-    imgEl.src = recipe.imageUrl || getFallbackFoodImage(recipe.category);
-    imgEl.onerror = () => { imgEl.src = getFallbackFoodImage(recipe.category); };
+    const imgWrap = document.getElementById('detailImageWrap');
+    const imgSrc = recipe.imageUrl ? recipe.imageUrl : generateBespokeMealCard(recipe);
+    imgWrap.innerHTML = `<img src="${imgSrc}" alt="${recipe.name}" onerror="App.handleImageError(this, '${recipe.name}', '${recipe.category}', '${recipe.origin}')">`;
 
-    // Ingredients list with kitchen inventory matching status
     const listEl = document.getElementById('detailIngredientsList');
     listEl.innerHTML = '';
     document.getElementById('detailIngredientsCount').textContent = `${recipe.ingredients.length} items`;
@@ -1489,18 +1707,16 @@ const App = (function () {
       const li = document.createElement('li');
       li.innerHTML = `
         <span>${ing}</span>
-        <span class="badge ${inStock ? 'badge-green' : 'badge-accent'}">
-          ${inStock ? '✔ In Kitchen' : '✕ Missing'}
+        <span class="badge ${inStock ? 'badge-green' : 'badge-wine'}">
+          ${inStock ? '✔ In Pantry' : '✕ Missing'}
         </span>
       `;
       listEl.appendChild(li);
     });
 
-    // Instructions
     const instructionsEl = document.getElementById('detailInstructionsText');
     instructionsEl.textContent = recipe.instructions;
 
-    // Hook buttons
     const planBtn = document.getElementById('detailPlanMealBtn');
     planBtn.onclick = () => {
       closeModal('recipeDetailModal');
@@ -1530,7 +1746,6 @@ const App = (function () {
     const lower = recipeIngredientStr.toLowerCase();
     return state.inventory.some(inv => {
       const invLower = inv.name.toLowerCase();
-      // Match if inv item name is inside recipe ingredient or vice versa
       return lower.includes(invLower) || invLower.includes(lower);
     });
   }
@@ -1540,9 +1755,7 @@ const App = (function () {
     recipe.ingredients.forEach(ing => {
       const inStock = checkIngredientInInventory(ing);
       if (!inStock) {
-        // Parse approximate name
         const itemName = cleanIngredientName(ing);
-        // Avoid duplicate shopping item
         const exists = state.shopping.some(s => s.name.toLowerCase() === itemName.toLowerCase() && !s.purchased);
         if (!exists) {
           state.shopping.push({
@@ -1563,17 +1776,16 @@ const App = (function () {
       updateBadgesAndCounters();
       showToast(`Added ${addedCount} missing ingredient(s) to Shopping List!`, 'success');
     } else {
-      showToast('You already have all ingredients in your kitchen or shopping list!', 'accent');
+      showToast('You already have all ingredients in your kitchen inventory!', 'accent');
     }
   }
 
   function cleanIngredientName(str) {
-    // Strips measurements like "3 cups", "1 tbsp", "500g" from beginning
     return str.replace(/^(\d+[\/\d\.]*\s*(cups?|tbsp|tsp|kg|g|liters?|ml|tubers?|bunche?s?|pieces?|can|tin|large|small|medium)?\s*)/i, '').trim();
   }
 
   // ----------------------------------------------------------------------------
-  // 10. "WHAT SHOULD I EAT TODAY?" (SUGGESTIONS & MATCHING)
+  // 13. "WHAT SHOULD I EAT TODAY?" (SMART SUGGESTIONS & SMART INVENTORY MATCH)
   // ----------------------------------------------------------------------------
   function generateMealSuggestion() {
     const category = document.getElementById('sugCategorySelect').value;
@@ -1581,7 +1793,6 @@ const App = (function () {
     const cuisine = document.getElementById('sugCuisineSelect').value;
     const matchInventory = document.getElementById('sugInventoryMatchCheck').checked;
 
-    // Filter recipes pool
     let candidates = state.recipes.filter(r => {
       if (cuisine === 'nigerian' && r.origin !== 'nigerian') return false;
       if (category !== 'any' && r.category !== category) return false;
@@ -1593,11 +1804,10 @@ const App = (function () {
     });
 
     if (candidates.length === 0) {
-      renderSuggestionResult(null, 'No meals matched all criteria. Try expanding your filters (e.g. Any Cuisine or Duration).');
+      renderSuggestionResult(null, 'No meals matched all criteria. Try expanding your filters (e.g. Any Duration or Category).');
       return;
     }
 
-    // Score candidates based on kitchen inventory
     const scored = candidates.map(r => {
       let have = 0;
       r.ingredients.forEach(ing => {
@@ -1608,10 +1818,8 @@ const App = (function () {
     });
 
     if (matchInventory) {
-      // Sort by highest inventory match percentage
       scored.sort((a, b) => b.ratio - a.ratio);
     } else {
-      // Shuffle randomly among candidates
       scored.sort(() => 0.5 - Math.random());
     }
 
@@ -1620,7 +1828,6 @@ const App = (function () {
   }
 
   function generateRandomSuggestion() {
-    // Set to Nigerian focus and pick completely randomly
     document.getElementById('sugCategorySelect').value = 'any';
     document.getElementById('sugTimeSelect').value = 'any';
     document.getElementById('sugCuisineSelect').value = 'nigerian';
@@ -1656,11 +1863,12 @@ const App = (function () {
 
     const totalTime = recipe.prepTime + recipe.cookTime;
     const matchPct = totalCount > 0 ? Math.round((haveCount / totalCount) * 100) : 0;
+    const imgSrc = recipe.imageUrl ? recipe.imageUrl : generateBespokeMealCard(recipe);
 
     container.innerHTML = `
       <div class="suggestion-result-card">
         <div class="suggestion-result-header">
-          <span class="suggestion-lead">${isSurprise ? '🎲 Surprise Discovery' : '✨ Top Recommendation for You'}</span>
+          <span class="suggestion-lead">${isSurprise ? '🎲 Surprise Discovery' : '✨ Chef’s Recommendation'}</span>
           <span class="suggestion-score-badge">
             🥣 ${haveCount} of ${totalCount} ingredients in Kitchen (${matchPct}%)
           </span>
@@ -1668,7 +1876,7 @@ const App = (function () {
         <div class="suggestion-result-body">
           <div class="sug-two-col">
             <div class="sug-image-box">
-              <img src="${recipe.imageUrl || getFallbackFoodImage(recipe.category)}" alt="${recipe.name}" onerror="this.src='${getFallbackFoodImage(recipe.category)}'">
+              <img src="${imgSrc}" alt="${recipe.name}" onerror="App.handleImageError(this, '${recipe.name}', '${recipe.category}', '${recipe.origin}')">
             </div>
             <div class="sug-info-col">
               <h3>${recipe.name}</h3>
@@ -1720,13 +1928,13 @@ const App = (function () {
               </svg>
               Plan This Meal
             </button>
-            <button class="btn btn-secondary" onclick="App.addMissingIngredientsToShoppingById('${recipe.id}')">
+            <button class="btn btn-gold" onclick="App.addMissingIngredientsToShoppingById('${recipe.id}')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1"></circle>
                 <circle cx="20" cy="21" r="1"></circle>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
               </svg>
-              Add Missing Ingredients to Shopping List
+              Add Missing to Shopping List
             </button>
             <button class="btn btn-outline" onclick="App.generateMealSuggestion()">
               Try Another Suggestion
@@ -1736,7 +1944,6 @@ const App = (function () {
       </div>
     `;
 
-    // Smooth scroll to recommendation
     container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
@@ -1746,7 +1953,7 @@ const App = (function () {
   }
 
   // ----------------------------------------------------------------------------
-  // 11. WEEKLY MEAL PLANNER MODULE
+  // 14. WEEKLY MEAL PLANNER MODULE
   // ----------------------------------------------------------------------------
   function renderPlanner() {
     const grid = document.getElementById('plannerGrid');
@@ -1756,18 +1963,13 @@ const App = (function () {
     const activeDay = state.plannerActiveDay;
     const daysToRender = activeDay === 'all' ? DAYS_OF_WEEK : [activeDay];
 
-    let totalPlannedInWeek = 0;
-
     daysToRender.forEach(day => {
       const dayCard = document.createElement('div');
       dayCard.className = `planner-day-card ${day === getTodayDayName() ? 'day-highlight' : ''}`;
 
       let dayMealCount = 0;
       MEAL_SLOTS.forEach(slot => {
-        if (state.planner[`${day}_${slot}`]) {
-          dayMealCount++;
-          totalPlannedInWeek++;
-        }
+        if (state.planner[`${day}_${slot}`]) dayMealCount++;
       });
 
       const dayTitle = day.charAt(0).toUpperCase() + day.slice(1);
@@ -1776,7 +1978,7 @@ const App = (function () {
         <div class="day-card-header">
           <div class="day-name-wrap">
             <h3>${dayTitle} ${day === getTodayDayName() ? '• Today' : ''}</h3>
-            <span>${dayMealCount} of 4 meals planned</span>
+            <span>${dayMealCount} of 4 meals scheduled</span>
           </div>
           <button class="btn btn-outline btn-xs" onclick="App.openAssignPlannerModal('${day}', null)">+ Add Meal</button>
         </div>
@@ -1804,7 +2006,7 @@ const App = (function () {
           slotDiv.innerHTML = `
             <div class="slot-item-header">
               <span class="slot-type-label">${slot}</span>
-              ${recipe && recipe.origin === 'nigerian' ? '<span class="badge badge-accent" style="font-size:0.68rem;">🇳🇬 Nigerian</span>' : ''}
+              ${recipe && recipe.origin === 'nigerian' ? '<span class="badge badge-wine" style="font-size:0.68rem;">🇳🇬 Nigerian</span>' : ''}
             </div>
             <div class="slot-item-content">
               <span class="slot-recipe-title">${title}</span>
@@ -1833,7 +2035,6 @@ const App = (function () {
             </div>
           `;
         } else {
-          // Empty slot placeholder
           slotDiv.innerHTML = `
             <div class="slot-item-header">
               <span class="slot-type-label">${slot}</span>
@@ -1850,28 +2051,25 @@ const App = (function () {
       grid.appendChild(dayCard);
     });
 
-    // Update active tab class
     document.querySelectorAll('#plannerDayTabs .day-tab').forEach(tab => {
       if (tab.dataset.day === activeDay) tab.classList.add('active');
       else tab.classList.remove('active');
     });
 
-    // If completely empty across week, show friendly banner
     if (Object.keys(state.planner).length === 0) {
       const emptyNote = document.createElement('div');
       emptyNote.className = 'empty-state';
       emptyNote.style.gridColumn = '1 / -1';
       emptyNote.innerHTML = `
         <div class="empty-icon">📅</div>
-        <h3>No meals planned yet for this week!</h3>
-        <p>Assign recipes from your collection or suggestions to build a tasty, organized week.</p>
+        <h3>No meals scheduled yet for this week</h3>
+        <p>Assign recipes from your collection or suggestions to build a tasty, organized culinary week.</p>
         <button class="btn btn-primary" onclick="App.openAssignPlannerModal('monday', 'lunch')">Plan Your First Meal</button>
       `;
       grid.appendChild(emptyNote);
     }
   }
 
-  // Open Planner Assignment Modal
   function openAssignPlannerModal(preselectedDay = null, preselectedSlot = null, preselectedRecipeId = null) {
     const daySelect = document.getElementById('planSelectDay');
     const slotSelect = document.getElementById('planSelectSlot');
@@ -1886,10 +2084,8 @@ const App = (function () {
     }
     customInput.value = '';
 
-    // Populate recipes dropdown
     recipeSelect.innerHTML = `<option value="">-- Choose From Saved Recipes --</option>`;
     
-    // Group Nigerian first
     const nigerianGroup = document.createElement('optgroup');
     nigerianGroup.label = '🇳🇬 Authentic Nigerian Dishes';
     const otherGroup = document.createElement('optgroup');
@@ -1909,7 +2105,6 @@ const App = (function () {
     if (preselectedRecipeId) {
       recipeSelect.value = preselectedRecipeId;
     } else {
-      // Check if slot already has a planned meal
       const key = `${daySelect.value}_${slotSelect.value}`;
       if (state.planner[key]) {
         if (state.planner[key].recipeId) recipeSelect.value = state.planner[key].recipeId;
@@ -2029,12 +2224,12 @@ const App = (function () {
       updateBadgesAndCounters();
       showToast(`Exported ${totalAdded} missing ingredient(s) into your Shopping List!`, 'success');
     } else {
-      showToast('All ingredients for your weekly meals are already in your kitchen or shopping list!', 'success');
+      showToast('All ingredients for your weekly meals are already in your kitchen inventory!', 'success');
     }
   }
 
   // ----------------------------------------------------------------------------
-  // 12. KITCHEN INVENTORY MODULE
+  // 15. KITCHEN INVENTORY MODULE
   // ----------------------------------------------------------------------------
   function renderInventory() {
     const container = document.getElementById('inventoryContainer');
@@ -2044,7 +2239,6 @@ const App = (function () {
 
     if (totalCountHeader) totalCountHeader.textContent = state.inventory.length;
 
-    // Filter counts
     const counts = {
       all: state.inventory.length,
       low: 0,
@@ -2065,7 +2259,6 @@ const App = (function () {
     document.getElementById('inv-count-expiring').textContent = counts.expiring;
     document.getElementById('inv-count-good').textContent = counts.good;
 
-    // Filter list
     let filtered = state.inventory.filter(item => {
       const days = daysUntil(item.expiryDate);
       const isLow = item.quantity <= (item.threshold || 2);
@@ -2106,7 +2299,7 @@ const App = (function () {
         statusBadge = `<span class="badge badge-gold">Expires in ${days} ${days === 1 ? 'day' : 'days'}</span>`;
       } else if (isLow) {
         statusClass = 'status-low';
-        statusBadge = '<span class="badge badge-accent">Running Low</span>';
+        statusBadge = '<span class="badge badge-wine">Running Low</span>';
       }
 
       const card = document.createElement('div');
@@ -2123,7 +2316,7 @@ const App = (function () {
           </div>
           <div class="inv-detail-row">
             <span>Expiry Date:</span>
-            <strong style="${days <= 3 ? 'color:var(--danger);' : ''}">${formatDate(item.expiryDate)}</strong>
+            <strong style="${days <= 3 ? 'color:#be123c;' : ''}">${formatDate(item.expiryDate)}</strong>
           </div>
         </div>
         <div class="inv-card-actions">
@@ -2205,7 +2398,6 @@ const App = (function () {
     if (hasError) return;
 
     if (id) {
-      // Edit
       const idx = state.inventory.findIndex(i => i.id === id);
       if (idx !== -1) {
         state.inventory[idx] = {
@@ -2220,7 +2412,6 @@ const App = (function () {
         showToast(`Updated "${name}" in inventory!`, 'success');
       }
     } else {
-      // Add
       const newItem = {
         id: generateId('inv'),
         name,
@@ -2273,7 +2464,7 @@ const App = (function () {
   }
 
   // ----------------------------------------------------------------------------
-  // 13. SHOPPING LIST MODULE
+  // 16. SHOPPING LIST MODULE
   // ----------------------------------------------------------------------------
   function renderShopping() {
     const container = document.getElementById('shoppingListContainer');
@@ -2283,7 +2474,6 @@ const App = (function () {
 
     if (totalHeader) totalHeader.textContent = state.shopping.length;
 
-    // Filter counts
     const pending = state.shopping.filter(s => !s.purchased).length;
     const purchased = state.shopping.filter(s => s.purchased).length;
 
@@ -2460,7 +2650,6 @@ const App = (function () {
     );
   }
 
-  // Move purchased items directly into Kitchen Inventory
   function movePurchasedToInventory() {
     const purchased = state.shopping.filter(s => s.purchased);
     if (purchased.length === 0) {
@@ -2474,7 +2663,6 @@ const App = (function () {
       () => {
         let movedCount = 0;
         purchased.forEach(shopItem => {
-          // Check if already in inventory
           const existing = state.inventory.find(i => i.name.toLowerCase() === shopItem.name.toLowerCase());
           if (existing) {
             existing.quantity = (parseFloat(existing.quantity) || 0) + parseFloat(shopItem.quantity);
@@ -2491,7 +2679,6 @@ const App = (function () {
           movedCount++;
         });
 
-        // Remove from shopping list
         state.shopping = state.shopping.filter(s => !s.purchased);
 
         saveInventory();
@@ -2505,7 +2692,7 @@ const App = (function () {
   }
 
   // ----------------------------------------------------------------------------
-  // 14. FORM VALIDATION HELPERS
+  // 17. FORM VALIDATION HELPERS
   // ----------------------------------------------------------------------------
   function setFieldError(elementId, msg) {
     const el = document.getElementById(elementId);
@@ -2521,24 +2708,24 @@ const App = (function () {
   }
 
   // ----------------------------------------------------------------------------
-  // 15. EVENT LISTENERS INITIALIZATION
+  // 18. EVENT LISTENERS INITIALIZATION
   // ----------------------------------------------------------------------------
   function initEventListeners() {
-    // 1. Sidebar Nav Click Handlers
+    // 1. Sidebar Nav
     document.querySelectorAll('.sidebar-nav .nav-item').forEach(btn => {
       btn.addEventListener('click', () => {
         navigate(btn.dataset.view);
       });
     });
 
-    // 2. Mobile Bottom Nav Click Handlers
+    // 2. Mobile Nav
     document.querySelectorAll('.mobile-nav .mobile-nav-item').forEach(btn => {
       btn.addEventListener('click', () => {
         navigate(btn.dataset.view);
       });
     });
 
-    // 3. Mobile Hamburger Menu Toggle
+    // 3. Mobile Hamburger
     const mobileMenuBtn = document.getElementById('mobileMenuToggle');
     const sidebar = document.getElementById('sidebar');
     if (mobileMenuBtn && sidebar) {
@@ -2547,7 +2734,7 @@ const App = (function () {
       });
     }
 
-    // Close modal triggers (data-close-modal buttons)
+    // Modal close triggers
     document.querySelectorAll('[data-close-modal]').forEach(btn => {
       btn.addEventListener('click', () => {
         const modal = btn.closest('.modal-backdrop');
@@ -2555,7 +2742,7 @@ const App = (function () {
       });
     });
 
-    // Close modal on click outside backdrop
+    // Close on backdrop click
     document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
       backdrop.addEventListener('click', (e) => {
         if (e.target === backdrop) {
@@ -2571,7 +2758,15 @@ const App = (function () {
       }
     });
 
-    // Forms Submissions
+    // Profile Setup Form
+    const profileForm = document.getElementById('userProfileForm');
+    if (profileForm) profileForm.addEventListener('submit', handleProfileSubmit);
+
+    // Cultural Greeting Cycle
+    const cycleBtn = document.getElementById('cycleGreetingBtn');
+    if (cycleBtn) cycleBtn.addEventListener('click', cycleGreeting);
+
+    // Other Forms
     const recipeForm = document.getElementById('recipeForm');
     if (recipeForm) recipeForm.addEventListener('submit', handleRecipeFormSubmit);
 
@@ -2715,24 +2910,26 @@ const App = (function () {
   }
 
   // ----------------------------------------------------------------------------
-  // 16. INITIALIZATION BOOTSTRAP
+  // 19. INITIALIZATION BOOTSTRAP
   // ----------------------------------------------------------------------------
   function init() {
     loadData();
     initEventListeners();
+    updateUserInterfaceIdentity();
     navigate('dashboard');
   }
 
-  // Run on DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
 
-  // Public API exposed for inline event handlers and tests
   return {
     navigate,
+    openProfileModal,
+    saveUserProfile,
+    cycleGreeting,
     openAddRecipeModal,
     openEditRecipeModal,
     openRecipeDetailModal,
@@ -2754,6 +2951,8 @@ const App = (function () {
     toggleShoppingPurchased,
     movePurchasedToInventory,
     clearPurchasedShopping,
+    handleImageError,
+    generateBespokeMealCard,
     toast: showToast,
     confirm: showConfirm
   };
