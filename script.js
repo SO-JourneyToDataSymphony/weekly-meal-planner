@@ -196,26 +196,26 @@ const App = (function () {
   // Verified Wikimedia Commons culinary photographs keyed strictly by recipe ID.
   const RECIPE_IMAGE_URLS = {
     rec_jollof_party: "https://commons.wikimedia.org/wiki/Special:FilePath/Nigerian_jollof_rice.jpg",
-    rec_egusi_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/Egusi_and_bitter_leaf_soup..jpg",
-    rec_pounded_yam: "https://commons.wikimedia.org/wiki/Special:FilePath/Pounded_yam_(Iyàn).jpg",
-    rec_efo_riro: "https://commons.wikimedia.org/wiki/Special:FilePath/Efo_riro.jpg",
+    rec_egusi_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/EGUSI_SOUP.JPG",
+    rec_pounded_yam: "https://commons.wikimedia.org/wiki/Special:FilePath/Pounded_yam_(Iy%C3%A0n).jpg",
+    rec_efo_riro: "https://commons.wikimedia.org/wiki/Special:FilePath/Efo_Riro.jpg",
     rec_akara_crispy: "https://commons.wikimedia.org/wiki/Special:FilePath/AKARA.jpg",
-    rec_moi_moi: "https://commons.wikimedia.org/wiki/Special:FilePath/Moin_Moin.jpg",
+    rec_moi_moi: "https://commons.wikimedia.org/wiki/Special:FilePath/Moi_moi.jpg",
     rec_yam_porridge: "https://commons.wikimedia.org/wiki/Special:FilePath/Asaro_Yam_porridge.jpg",
     rec_ewa_aganyin: "https://commons.wikimedia.org/wiki/Special:FilePath/Ewa_Aganyin.jpg",
-    rec_ofada_ayamase: "https://commons.wikimedia.org/wiki/Special:FilePath/Ofada_Rice.jpg",
-    rec_okra_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/Okro_soup_with_shrimps%2Cdried_fish%2Ccow_leg_and_tail_with_meat.jpg",
-    rec_ogbono_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/Ogbono_soup.jpg",
+    rec_ofada_ayamase: "https://commons.wikimedia.org/wiki/Special:FilePath/Ofada_Rice_and_stew_on_leaf.jpg",
+    rec_okra_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/Okra_Soup.jpg",
+    rec_ogbono_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/Ogbono_Soup.jpg",
     rec_banga_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/Banga_Soup.jpg",
-    rec_afang_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/Afang_Soup.jpg",
+    rec_afang_soup: "https://commons.wikimedia.org/wiki/Special:FilePath/Afang_soup.jpg",
     rec_edikang_ikong: "https://commons.wikimedia.org/wiki/Special:FilePath/Edikang_ikong.jpg",
     rec_amala_abula: "https://commons.wikimedia.org/wiki/Special:FilePath/Amala_and_ewedu_with_gbegiri_soup.jpg",
-    rec_beef_suya: "https://commons.wikimedia.org/wiki/Special:FilePath/Beefsuya.JPG",
+    rec_beef_suya: "https://commons.wikimedia.org/wiki/Special:FilePath/Suya.jpg",
     rec_puff_puff: "https://commons.wikimedia.org/wiki/Special:FilePath/Puff-Puff.jpg",
-    rec_meat_pie: "https://commons.wikimedia.org/wiki/Special:FilePath/Meat_pie_in_Northern_Nigeria.jpg",
-    rec_nigerian_fried_rice: "https://commons.wikimedia.org/wiki/Special:FilePath/African_nigerian_fried_rice_eith_stew_..._plantain_and_fresh_salad.png",
+    rec_meat_pie: "https://commons.wikimedia.org/wiki/Special:FilePath/A_Northern_Nigeria_snacks_called_meat_pie_21.jpg",
+    rec_nigerian_fried_rice: "https://commons.wikimedia.org/wiki/Special:FilePath/Fried_rice_and_chicken_garnished_with_sweet_corn%2C_carrot_and_green_peas.jpg",
     rec_ogi_pap: "https://commons.wikimedia.org/wiki/Special:FilePath/Akamu.jpg",
-    rec_intl_pancakes: "https://commons.wikimedia.org/wiki/Special:FilePath/Blueberry_pancakes_with_maple_syrup_(9583713785).jpg"
+    rec_intl_pancakes: "https://commons.wikimedia.org/wiki/Special:FilePath/Fruit_Pancakes_(45112010972).jpg"
   };
 
   // Verified Wikimedia Commons photographs for raw ingredients keyed strictly by ingredient ID.
@@ -246,33 +246,33 @@ const App = (function () {
     honey: "https://commons.wikimedia.org/wiki/Special:FilePath/Runny_hunny.jpg"
   };
 
-  // Source attribution records for externally hosted Wikimedia Commons photographs.
+  // Source attribution records for culinary photographs.
   const IMAGE_ATTRIBUTIONS = {
     recipes: {
       rec_jollof_party: { name: 'Classic Smoky Party Jollof Rice', file: 'Nigerian_jollof_rice.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Nigerian_jollof_rice.jpg', artist: 'Halima Waziri', license: 'CC BY-SA 4.0' },
-      rec_egusi_soup: { name: 'Authentic Lump-Style Egusi Soup', file: 'Egusi_and_bitter_leaf_soup..jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Egusi_and_bitter_leaf_soup..jpg', artist: 'Drkevwe', license: 'CC BY-SA 4.0' },
+      rec_egusi_soup: { name: 'Authentic Lump-Style Egusi Soup', file: 'EGUSI_SOUP.JPG', pageUrl: 'https://commons.wikimedia.org/wiki/File:EGUSI_SOUP.JPG', artist: 'Zz411', license: 'CC BY-SA 3.0' },
       rec_pounded_yam: { name: 'Silky Pounded Yam (Iyan)', file: 'Pounded_yam_(Iyàn).jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Pounded_yam_(Iy%C3%A0n).jpg', artist: 'Taoheedah', license: 'CC BY-SA 4.0' },
-      rec_efo_riro: { name: 'Rich Yoruba Efo Riro', file: 'Efo_riro.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Efo_riro.jpg', artist: 'Bukky658', license: 'CC BY-SA 4.0' },
+      rec_efo_riro: { name: 'Rich Yoruba Efo Riro', file: 'Efo_Riro.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Efo_Riro.jpg', artist: 'Bukky658', license: 'CC BY-SA 4.0' },
       rec_akara_crispy: { name: 'Crispy Golden Akara (Bean Cakes)', file: 'AKARA.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:AKARA.jpg', artist: 'Linason Blessing', license: 'CC BY-SA 4.0' },
-      rec_moi_moi: { name: 'Steamed Moi Moi', file: 'Moin_Moin.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Moin_Moin.jpg', artist: 'Rka11111', license: 'CC BY-SA 3.0' },
+      rec_moi_moi: { name: 'Steamed Moi Moi', file: 'Moi_moi.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Moi_moi.jpg', artist: 'Rka11111', license: 'CC BY-SA 3.0' },
       rec_yam_porridge: { name: 'Savory Asaro (Yam Porridge)', file: 'Asaro_Yam_porridge.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Asaro_Yam_porridge.jpg', artist: 'Tunde Akangbe', license: 'CC BY-SA 4.0' },
       rec_ewa_aganyin: { name: 'Traditional Ewa Aganyin', file: 'Ewa_Aganyin.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Ewa_Aganyin.jpg', artist: 'Aderiqueza', license: 'CC BY-SA 4.0' },
-      rec_ofada_ayamase: { name: 'Designer Ofada Rice & Ayamase', file: 'Ofada_Rice.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Ofada_Rice.jpg', artist: 'Ijeoma', license: 'CC BY-SA 4.0' },
-      rec_okra_soup: { name: 'Fresh Seafood Okra Soup (Ila Alasepo)', file: 'Okro_soup_with_shrimps,dried_fish,cow_leg_and_tail_with_meat.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Okro_soup_with_shrimps%2Cdried_fish%2Ccow_leg_and_tail_with_meat.jpg', artist: 'Creativity special', license: 'CC BY-SA 4.0' },
-      rec_ogbono_soup: { name: 'Traditional Ogbono Soup', file: 'Ogbono_soup.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Ogbono_soup.jpg', artist: 'Xtacywura', license: 'CC BY-SA 4.0' },
+      rec_ofada_ayamase: { name: 'Designer Ofada Rice & Ayamase Stew', file: 'Ofada_Rice_and_stew_on_leaf.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Ofada_Rice_and_stew_on_leaf.jpg', artist: 'Bukky658', license: 'CC BY-SA 4.0' },
+      rec_okra_soup: { name: 'Fresh Seafood Okra Soup (Ila Alasepo)', file: 'Okra_Soup.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Okra_Soup.jpg', artist: 'The.c00k1st', license: 'CC BY-SA 4.0' },
+      rec_ogbono_soup: { name: 'Traditional Ogbono Soup', file: 'Ogbono_Soup.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Ogbono_Soup.jpg', artist: 'Xtacywura', license: 'CC BY-SA 4.0' },
       rec_banga_soup: { name: 'Delta Banga Soup', file: 'Banga_Soup.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Banga_Soup.jpg', artist: 'Ehinomen55', license: 'CC BY-SA 4.0' },
-      rec_afang_soup: { name: 'Calabar Afang Soup', file: 'Afang_Soup.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Afang_Soup.jpg', artist: 'Yemisi Ogbe', license: 'CC BY-SA 4.0' },
+      rec_afang_soup: { name: 'Calabar Afang Soup', file: 'Afang_soup.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Afang_soup.jpg', artist: 'Yemisi Ogbe', license: 'CC BY-SA 4.0' },
       rec_edikang_ikong: { name: 'Efik Edikang Ikong Soup', file: 'Edikang_ikong.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Edikang_ikong.jpg', artist: 'Aderiqueza', license: 'CC BY-SA 4.0' },
       rec_amala_abula: { name: 'Amala with Ewedu & Gbegiri', file: 'Amala_and_ewedu_with_gbegiri_soup.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Amala_and_ewedu_with_gbegiri_soup.jpg', artist: 'Bukky658', license: 'CC BY-SA 4.0' },
-      rec_beef_suya: { name: 'Authentic Street Suya', file: 'Beefsuya.JPG', pageUrl: 'https://commons.wikimedia.org/wiki/File:Beefsuya.JPG', artist: 'WhisperToMe', license: 'Public domain' },
+      rec_beef_suya: { name: 'Authentic Street Suya', file: 'Suya.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Suya.jpg', artist: 'WhisperToMe', license: 'Public domain' },
       rec_puff_puff: { name: 'Golden Nigerian Puff Puff', file: 'Puff-Puff.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Puff-Puff.jpg', artist: 'Albertoblaq', license: 'CC BY-SA 4.0' },
-      rec_meat_pie: { name: 'Traditional Nigerian Meat Pie', file: 'Meat_pie_in_Northern_Nigeria.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Meat_pie_in_Northern_Nigeria.jpg', artist: 'Zahraswaty', license: 'CC BY-SA 4.0' },
-      rec_nigerian_fried_rice: { name: 'Nigerian Party Fried Rice', file: 'African_nigerian_fried_rice_eith_stew_..._plantain_and_fresh_salad.png', pageUrl: 'https://commons.wikimedia.org/wiki/File:African_nigerian_fried_rice_eith_stew_..._plantain_and_fresh_salad.png', artist: 'Honeybee5512', license: 'CC BY-SA 4.0' },
+      rec_meat_pie: { name: 'Traditional Nigerian Meat Pie', file: 'A_Northern_Nigeria_snacks_called_meat_pie_21.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:A_Northern_Nigeria_snacks_called_meat_pie_21.jpg', artist: 'Hajjare', license: 'CC BY-SA 4.0' },
+      rec_nigerian_fried_rice: { name: 'Nigerian Party Fried Rice', file: 'Fried_rice_and_chicken_garnished_with_sweet_corn,_carrot_and_green_peas.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Fried_rice_and_chicken_garnished_with_sweet_corn,_carrot_and_green_peas.jpg', artist: 'Joyeche', license: 'CC BY-SA 4.0' },
       rec_ogi_pap: { name: 'Fermented Ogi / Pap with Akara', file: 'Akamu.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Akamu.jpg', artist: 'DebbieUfedo', license: 'CC BY-SA 4.0' },
-      rec_intl_pancakes: { name: 'Fluffy Golden Pancakes with Honey & Fruit', file: 'Blueberry_pancakes_with_maple_syrup_(9583713785).jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Blueberry_pancakes_with_maple_syrup_(9583713785).jpg', artist: 'Ruth Hartnup', license: 'CC BY 2.0' }
+      rec_intl_pancakes: { name: 'Fluffy Golden Pancakes with Honey & Fruit', file: 'Fruit_Pancakes_(45112010972).jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Fruit_Pancakes_(45112010972).jpg', artist: 'Theo Crazzolara', license: 'CC BY 2.0' }
     },
     ingredients: {
-      rice: { name: 'Rice', file: 'Rice_Grains.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Rice_Grains.jpg', artist: 'Ashok Menon', license: 'CC BY 2.0' },
+      rice: { name: 'Rice', file: 'rice.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Rice_Grains.jpg', artist: 'Ashok Menon', license: 'CC BY 2.0' },
       beans: { name: 'Beans (Black-eyed peas)', file: 'BlackEyedPeas.JPG', pageUrl: 'https://commons.wikimedia.org/wiki/File:BlackEyedPeas.JPG', artist: 'Toby Hudson', license: 'CC BY-SA 3.0' },
       yam: { name: 'Yam Tuber', file: 'Yam_tuber.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Yam_tuber.jpg', artist: 'Kambai Akau', license: 'CC BY-SA 4.0' },
       tomatoes: { name: 'Tomatoes', file: 'Tomatoes_plain_and_sliced.jpg', pageUrl: 'https://commons.wikimedia.org/wiki/File:Tomatoes_plain_and_sliced.jpg', artist: 'FoeNyx', license: 'CC BY-SA 3.0' },
@@ -299,17 +299,29 @@ const App = (function () {
     }
   };
 
-  // recipeId -> local file fallback in assets/images/recipes/ (if downloaded locally)
+  // recipeId -> local file in assets/images/recipes/ (locally downloaded verified photographs)
   const RECIPE_IMAGE_FILES = {
     rec_jollof_party: 'rec_jollof_party.jpg',
     rec_egusi_soup: 'rec_egusi_soup.jpg',
     rec_pounded_yam: 'rec_pounded_yam.jpg',
+    rec_efo_riro: 'rec_efo_riro.jpg',
+    rec_akara_crispy: 'rec_akara_crispy.jpg',
+    rec_moi_moi: 'rec_moi_moi.jpg',
+    rec_yam_porridge: 'rec_yam_porridge.jpg',
+    rec_ewa_aganyin: 'rec_ewa_aganyin.jpg',
     rec_ofada_ayamase: 'rec_ofada_ayamase.jpg',
     rec_okra_soup: 'rec_okra_soup.jpg',
     rec_ogbono_soup: 'rec_ogbono_soup.jpg',
+    rec_banga_soup: 'rec_banga_soup.jpg',
+    rec_afang_soup: 'rec_afang_soup.jpg',
+    rec_edikang_ikong: 'rec_edikang_ikong.jpg',
+    rec_amala_abula: 'rec_amala_abula.jpg',
     rec_beef_suya: 'rec_beef_suya.jpg',
     rec_puff_puff: 'rec_puff_puff.jpg',
-    rec_meat_pie: 'rec_meat_pie.jpg'
+    rec_meat_pie: 'rec_meat_pie.jpg',
+    rec_nigerian_fried_rice: 'rec_nigerian_fried_rice.jpg',
+    rec_ogi_pap: 'rec_ogi_pap.jpg',
+    rec_intl_pancakes: 'rec_intl_pancakes.jpg'
   };
 
   // Names a recipe photograph may be matched by when a recipe has no id-based
@@ -513,18 +525,18 @@ const App = (function () {
   // -> { src, verifiedUrl, local, lib, custom, fallback, imageId }
   // Strict priority:
   // 1. A valid custom image URL supplied by the user.
-  // 2. A verified URL from RECIPE_IMAGE_URLS.
-  // 3. An existing local image, if available.
+  // 2. An existing local image file from RECIPE_IMAGE_FILES (assets/images/recipes/).
+  // 3. A verified external URL from RECIPE_IMAGE_URLS.
   // 4. The existing labelled bespoke fallback card.
   function getRecipeImage(recipe) {
     const url = safeString(recipe && recipe.imageUrl);
     const custom = url && !LEGACY_SEED_IMAGE_PATTERN.test(url) ? url : '';
     const imageId = getRecipeImageId(recipe);
-    const verifiedUrl = imageId && RECIPE_IMAGE_URLS[imageId] ? RECIPE_IMAGE_URLS[imageId] : '';
     const local = imageId && RECIPE_IMAGE_FILES[imageId] ? IMAGE_PATHS.recipes + RECIPE_IMAGE_FILES[imageId] : '';
+    const verifiedUrl = imageId && RECIPE_IMAGE_URLS[imageId] ? RECIPE_IMAGE_URLS[imageId] : '';
     const fallback = generateBespokeMealCard(recipe);
 
-    const src = custom || verifiedUrl || local || fallback;
+    const src = custom || local || verifiedUrl || fallback;
     return {
       src,
       custom,
@@ -588,8 +600,8 @@ const App = (function () {
       ` data-tile="${escapeHtml(info.tile)}" onerror="App.handleFoodImageError(this)">`;
   }
 
-  // Failure chain: (1) verified URL -> local photo, (2) retry local photo once,
-  // (3) the labelled bespoke card/tile for THIS item. Never another food's photograph.
+  // Failure chain: (1) try alternative source (verified URL <-> local file),
+  // (2) labelled bespoke card/tile for THIS exact item. Never another food's photograph.
   function handleFoodImageError(img) {
     if (!img || !img.dataset) return;
     const stage = parseInt(img.dataset.stage || '0', 10);
@@ -597,12 +609,19 @@ const App = (function () {
     img.dataset.stage = String(stage + 1);
 
     const local = img.dataset.local || '';
+    const verified = img.dataset.verified || '';
     const current = img.getAttribute('src') || '';
 
-    // Stage 1: Try local image fallback if available and not already attempted
-    if (stage === 0 && local && current !== local) {
-      img.src = local;
-      return;
+    // Stage 1: Try alternate source if not already attempted
+    if (stage === 0) {
+      if (verified && current !== verified && current === local) {
+        img.src = verified;
+        return;
+      }
+      if (local && current !== local && current === verified) {
+        img.src = local;
+        return;
+      }
     }
 
     // Stage 2: Fall back to labelled bespoke SVG for this exact item
@@ -3649,7 +3668,7 @@ const App = (function () {
       card.className = 'credit-item-card';
 
       const imgUrl = isRecipes
-        ? (RECIPE_IMAGE_URLS[id] || (IMAGE_PATHS.recipes + RECIPE_IMAGE_FILES[id]))
+        ? ((RECIPE_IMAGE_FILES[id] ? IMAGE_PATHS.recipes + RECIPE_IMAGE_FILES[id] : '') || RECIPE_IMAGE_URLS[id])
         : (INGREDIENT_IMAGE_URLS[id] || '');
 
       card.innerHTML = `
